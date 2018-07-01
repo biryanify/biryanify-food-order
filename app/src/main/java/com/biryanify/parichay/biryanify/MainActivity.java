@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
 
-        mOrdersDatabaseReference = mFirebaseDatabase.getReference().child("orders");
+        mOrdersDatabaseReference = mFirebaseDatabase.getReference();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
