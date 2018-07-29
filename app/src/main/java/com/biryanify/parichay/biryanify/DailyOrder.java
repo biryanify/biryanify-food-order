@@ -1,5 +1,7 @@
 package com.biryanify.parichay.biryanify;
 
+import java.util.Map;
+
 public class DailyOrder {
 
     private String name;
@@ -9,6 +11,8 @@ public class DailyOrder {
     private String method;
     private String suggestion;
     private String quantity;
+    private Map<String , String> address;
+
 
     DailyOrder() {
         name = "";
@@ -19,6 +23,7 @@ public class DailyOrder {
         suggestion = "";
         quantity = "";
     }
+
 
     public void setPhone(String phone) {
         this.phone = phone;
@@ -74,5 +79,13 @@ public class DailyOrder {
 
     public String getQuantity() {
         return quantity;
+    }
+
+    public Map<String, String> getAddress() {
+        return address;
+    }
+
+    public void setAddress(Map<String, String> address) {
+        this.address = address;
     }
 }
