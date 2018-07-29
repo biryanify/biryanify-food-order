@@ -20,7 +20,7 @@ function onFormSubmit(e) {
   
   var dataToExport = {};
   
-  dataToExport[phone] = 
+  dataToExport = 
                    {  
                     "name": name,
                     "email":email,
@@ -41,11 +41,9 @@ function onFormSubmit(e) {
   
   var date = Utilities.formatDate(new Date(), "GMT+1", "dd_MM_yyyy");
   
-  var finalData = {};
-  finalData[date] =  dataToExport;
   
   var base = FirebaseApp.getDatabaseByUrl('https://sendingresponse-64495.firebaseio.com/');
-  base.setData("orders", finalData);
+  base.setData("orders/" + date + "/" + phone, dataToExport);
 }
 
 function getMethod(item) {
