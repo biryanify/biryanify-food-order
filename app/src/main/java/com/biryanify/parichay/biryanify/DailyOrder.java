@@ -5,19 +5,19 @@ public class DailyOrder {
     private String name;
     private String phone;
     private String email;
-    private String address;
+    private String item;
     private String method;
     private String suggestion;
-    private int quantity;
+    private String quantity;
 
     DailyOrder() {
         name = "";
         phone = "";
         email = "";
-        address = "";
+        item = "";
         method = "";
         suggestion = "";
-        quantity = 0;
+        quantity = "";
     }
 
     public void setPhone(String phone) {
@@ -28,8 +28,8 @@ public class DailyOrder {
         this.name = name;
     }
 
-    public void setAddress(String address) {
-        this.address += address;
+    public void setItem(String item) {
+        this.item += item;
     }
 
     public void setMethod(String method) {
@@ -40,7 +40,7 @@ public class DailyOrder {
         this.suggestion = suggestion;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 
@@ -60,8 +60,8 @@ public class DailyOrder {
         this.email = email;
     }
 
-    public String getAddress() {
-        return address;
+    public String getItem() {
+        return item;
     }
 
     public String getMethod() {
@@ -72,7 +72,7 @@ public class DailyOrder {
         return suggestion;
     }
 
-    public int getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 }
