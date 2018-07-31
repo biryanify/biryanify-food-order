@@ -19,7 +19,6 @@ public class DailyOrder {
         phone = "";
         email = "";
         item = "";
-        method = "";
         suggestion = "";
         quantity = "";
     }
@@ -35,10 +34,6 @@ public class DailyOrder {
 
     public void setItem(String item) {
         this.item += item;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
     }
 
     public void setSuggestion(String suggestion) {
@@ -67,10 +62,6 @@ public class DailyOrder {
 
     public String getItem() {
         return item;
-    }
-
-    public String getMethod() {
-        return method;
     }
 
     public String getSuggestion() {

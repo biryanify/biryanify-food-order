@@ -29,11 +29,9 @@ function onFormSubmit(e) {
                      { 
                        "flat":flat,
                        "area":area,
-                       "landmark":landmark
                      },
                      "item": item,
                      "quantity": quantity,
-                     "method": method,
                      "suggestion": suggestion
                    };
 
