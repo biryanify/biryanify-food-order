@@ -1,8 +1,9 @@
 package com.biryanify.parichay.biryanify;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class DailyOrder {
+public class DailyOrder implements Serializable{
 
     private String name;
     private String phone;

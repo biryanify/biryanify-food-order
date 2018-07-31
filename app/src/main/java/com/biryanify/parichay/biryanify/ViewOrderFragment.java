@@ -1,5 +1,6 @@
 package com.biryanify.parichay.biryanify;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +13,6 @@ public class ViewOrderFragment extends Fragment{
     private TextView viewOrder;
 
     public ViewOrderFragment() {
-
     }
 
     @Override
@@ -20,7 +20,15 @@ public class ViewOrderFragment extends Fragment{
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.vieworder_fragment, container, false);
         viewOrder = view.findViewById(R.id.view_order_textView);
-        viewOrder.setText("Wait!");
+        Bundle bundle = getArguments();
+        DailyOrder order = (DailyOrder) bundle.getSerializable("order");
+        String info = "Name: "+order.getName()+
+                "\n\nPhone: "+order.getPhone()+
+                "\n\nEmail: \n"+order.getEmail()+
+                "\n\nItem: "+order.getItem()+
+                "\n\nQuantity: "+order.getQuantity()+
+                "\n\nAddress: "+order.getAddress().get("flat") +" "+order.getAddress().get("area");
+        viewOrder.setText(info);
         return view;
     }
 }

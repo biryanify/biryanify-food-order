@@ -59,7 +59,7 @@ public class IndexActivity extends AppCompatActivity {
                     intent.putExtra("date", date);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(IndexActivity.this, "Select a date.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(IndexActivity.this, "Choose a date.", Toast.LENGTH_SHORT).show();
                 }
             }
         });

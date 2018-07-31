@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,18 +76,20 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onClick(View view, int position) {
-                        Intent intent = new Intent(MainActivity.this, FragmentActivity.class);
-                        intent.putExtra("extra", "expand order");
-                        intent.putExtra("name", dailyOrders.get(position).getName());
-                        intent.putExtra("phone", dailyOrders.get(position).getPhone());
-                        intent.putExtra("email", dailyOrders.get(position).getEmail());
-                        intent.putExtra("item", dailyOrders.get(position).getItem());
-                        intent.putExtra("quantity", dailyOrders.get(position).getQuantity());
-                        intent.putExtra("suggestion", dailyOrders.get(position).getSuggestion());
-                        intent.putExtra("address", dailyOrders.get(position).getAddress().get("flat") +
-                                " " + dailyOrders.get(position).getAddress().get("area"));
-
-                        startActivity(intent);
+                        startActivity(
+                                FragmentActivity.newInstance(
+                                        MainActivity.this,
+                                        dailyOrders.get(position),
+                                        "expand order")
+                        );
+//                        intent.putExtra("name", dailyOrders.get(position).getName());
+//                        intent.putExtra("phone", dailyOrders.get(position).getPhone());
+//                        intent.putExtra("email", dailyOrders.get(position).getEmail());
+//                        intent.putExtra("item", dailyOrders.get(position).getItem());
+//                        intent.putExtra("quantity", dailyOrders.get(position).getQuantity());
+//                        intent.putExtra("suggestion", dailyOrders.get(position).getSuggestion());
+//                        intent.putExtra("address", dailyOrders.get(position).getAddress().get("flat") +
+//                                " " + dailyOrders.get(position).getAddress().get("area"));
                     }
                 }));
 
