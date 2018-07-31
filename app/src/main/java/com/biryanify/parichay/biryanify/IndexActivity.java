@@ -31,8 +31,6 @@ public class IndexActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.getDate);
 
-        editText.requestFocus();
-
         editText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +54,7 @@ public class IndexActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String date = editText.getText().toString();
-                if(date != "") {
+                if(date.length() != 0) {
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
                     intent.putExtra("date", date);
                     startActivity(intent);
@@ -76,4 +74,11 @@ public class IndexActivity extends AppCompatActivity {
 //        intent.putExtra("date", date);
 //        startActivity(intent);
 //    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        editText.setText("");
+    }
 }

@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="noorder_fragment_color">#990000</color>
     <color name="noorder_text_color">#000000</color>
+    <color name="vieworder_fragment_color">#1e90ff</color>
 </resources>

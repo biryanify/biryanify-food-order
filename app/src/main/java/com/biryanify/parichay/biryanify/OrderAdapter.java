@@ -1,11 +1,11 @@
 package com.biryanify.parichay.biryanify;
 
-
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,8 +18,15 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         public TextView phoneTextView;
         public ViewHolder(View orderView) {
             super(orderView);
+
             nameTextView = (TextView) orderView.findViewById(R.id.nameTextView);
             phoneTextView = (TextView) orderView.findViewById(R.id.phoneTextView);
+        }
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        }
+        public void onClick(View view) {
+
         }
     }
 
@@ -33,8 +40,8 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View orderView = inflater.inflate(R.layout.item_order, parent, false);
-
         ViewHolder vh = new ViewHolder(orderView);
+
         return vh;
     }
 
