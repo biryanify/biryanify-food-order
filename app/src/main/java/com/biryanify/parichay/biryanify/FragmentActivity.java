@@ -23,17 +23,17 @@ public class FragmentActivity extends AppCompatActivity {
             }
         }
 
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         Intent intent = getIntent();
         String intentStringExtra = intent.getStringExtra("extra");
+        System.out.print(intentStringExtra);
 
-        if(intentStringExtra == "no orders") {
+        if(intentStringExtra.equals("no orders")) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             NoOrderFragment noOrderFragment = new NoOrderFragment();
             fragmentTransaction.add(R.id.fragment_container, noOrderFragment, null);
             fragmentTransaction.commit();
         }
-        else if(intentStringExtra == "expand order") {
+        else if(intentStringExtra.equals("expand order")) {
 
         }
     }

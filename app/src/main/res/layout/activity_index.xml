@@ -18,7 +18,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="94dp"
         android:ems="10"
-        android:inputType="date" />
+        android:inputType="date"
+        android:hint="Choose a date"/>
 
     <Button
         android:id="@+id/button_check"

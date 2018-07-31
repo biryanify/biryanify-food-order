@@ -1,37 +1,54 @@
 package com.biryanify.parichay.biryanify;
 
-import android.app.Activity;
+
 import android.content.Context;
-import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class OrderAdapter extends ArrayAdapter<DailyOrder> {
-    public OrderAdapter(Context context, int resource, List<DailyOrder> objects) {
-        super(context, resource, objects);
+public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
+    private List<DailyOrder> mDailyOrders;
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView nameTextView;
+        public TextView phoneTextView;
+        public ViewHolder(View orderView) {
+            super(orderView);
+            nameTextView = (TextView) orderView.findViewById(R.id.nameTextView);
+            phoneTextView = (TextView) orderView.findViewById(R.id.phoneTextView);
+        }
+    }
+
+    public OrderAdapter(List<DailyOrder> dailyOrders) {
+        mDailyOrders = dailyOrders;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_order, parent, false);
-        }
+    public OrderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Context context = parent.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
 
-        TextView nameTextView = (TextView) convertView.findViewById(R.id.nameTextView);
-        TextView phoneTextView = (TextView) convertView.findViewById(R.id.phoneTextView);
+        View orderView = inflater.inflate(R.layout.item_order, parent, false);
 
-        DailyOrder order = getItem(position);
+        ViewHolder vh = new ViewHolder(orderView);
+        return vh;
+    }
 
-        nameTextView.setVisibility(View.VISIBLE);
-        nameTextView.setText(order.getName());
+    public void onBindViewHolder(OrderAdapter.ViewHolder holder, int position) {
+        DailyOrder order = mDailyOrders.get(position);
 
-        phoneTextView.setText(order.getPhone());
+        TextView textView = holder.nameTextView;
+        textView.setText(order.getName());
+        TextView textView1 = holder.phoneTextView;
+        textView1.setText(order.getPhone());
+    }
 
-        return convertView;
-
+    @Override
+    public int getItemCount() {
+        return mDailyOrders.size();
     }
 }

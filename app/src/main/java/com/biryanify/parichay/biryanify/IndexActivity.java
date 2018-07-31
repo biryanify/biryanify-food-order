@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,7 +30,7 @@ public class IndexActivity extends AppCompatActivity {
         dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
         editText = findViewById(R.id.getDate);
-        editText.setInputType(InputType.TYPE_NULL);
+
         editText.requestFocus();
 
         editText.setOnClickListener(new View.OnClickListener() {
@@ -55,10 +56,13 @@ public class IndexActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String date = editText.getText().toString();
-
-                Intent intent = new Intent(v.getContext(), MainActivity.class);
-                intent.putExtra("date", date);
-                startActivity(intent);
+                if(date != "") {
+                    Intent intent = new Intent(v.getContext(), MainActivity.class);
+                    intent.putExtra("date", date);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(IndexActivity.this, "Select a date.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
