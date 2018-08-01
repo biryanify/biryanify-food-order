@@ -24,10 +24,10 @@ public class ViewOrderFragment extends Fragment{
         DailyOrder order = (DailyOrder) bundle.getSerializable("order");
         String info = "Name: "+order.getName()+
                 "\n\nPhone: "+order.getPhone()+
-                "\n\nEmail: \n"+order.getEmail()+
+                "\n\nEmail: "+order.getEmail()+
                 "\n\nItem: "+order.getItem()+
                 "\n\nQuantity: "+order.getQuantity()+
-                "\n\nAddress: "+order.getAddress().get("flat") +" "+order.getAddress().get("area");
+                "\n\nAddress: "+order.getAddress().get("flat") +" "+ order.getAddress().get("area");
         viewOrder.setText(info);
         return view;
     }

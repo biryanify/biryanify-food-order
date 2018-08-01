@@ -3,20 +3,18 @@ package com.biryanify.parichay.biryanify;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import android.view.View;
 
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,17 +22,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
 
-    private ProgressBar mProgressBar;
+//    private ProgressBar mProgressBar;
 
     List<DailyOrder> dailyOrders = new ArrayList<>();
 
@@ -46,15 +44,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+//        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this,
-                LinearLayoutManager.VERTICAL, false);
-        layoutManager.scrollToPosition(0);
-        mRecyclerView.setLayoutManager(layoutManager);
 
         RecyclerView.ItemDecoration itemDecoration = new
                 DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
@@ -82,14 +75,6 @@ public class MainActivity extends Activity {
                                         dailyOrders.get(position),
                                         "expand order")
                         );
-//                        intent.putExtra("name", dailyOrders.get(position).getName());
-//                        intent.putExtra("phone", dailyOrders.get(position).getPhone());
-//                        intent.putExtra("email", dailyOrders.get(position).getEmail());
-//                        intent.putExtra("item", dailyOrders.get(position).getItem());
-//                        intent.putExtra("quantity", dailyOrders.get(position).getQuantity());
-//                        intent.putExtra("suggestion", dailyOrders.get(position).getSuggestion());
-//                        intent.putExtra("address", dailyOrders.get(position).getAddress().get("flat") +
-//                                " " + dailyOrders.get(position).getAddress().get("area"));
                     }
                 }));
 
@@ -111,11 +96,13 @@ public class MainActivity extends Activity {
                     OrderAdapter adapter = new OrderAdapter(dailyOrders);
                     mRecyclerView.setAdapter(adapter);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                    mProgressBar.setVisibility(View.INVISIBLE);
+//                    mProgressBar.setVisibility(View.INVISIBLE);
                 } else {
-                    Intent intent3 = new Intent(MainActivity.this, FragmentActivity.class);
-                    intent3.putExtra("extra", "no orders");
-                    startActivity(intent3);
+                    startActivity(
+                            FragmentActivity.newInstance(
+                                MainActivity.this,
+                                "no orders")
+                    );
                     finish();
                 }
             }

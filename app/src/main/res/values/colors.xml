@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#464646</color>
+    <color name="colorPrimaryDark">#2f2f2f</color>
+    <color name="colorAccent">#5e5e5e</color>
     <color name="noorder_fragment_color">#990000</color>
     <color name="noorder_text_color">#000000</color>
-    <color name="vieworder_fragment_color">#1e90ff</color>
+    <color name="recyclerview_color">#C0C0C0</color>
+    <color name="vieworder_fragment_color">#20b2aa</color>
 </resources>

@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -18,7 +19,7 @@ import java.util.Locale;
 
 public class IndexActivity extends AppCompatActivity {
 
-    private EditText editText;
+    private TextView editText;
     private Button mButton;
     private DatePickerDialog datePickerDialog;
     private SimpleDateFormat dateFormat;
@@ -59,7 +60,7 @@ public class IndexActivity extends AppCompatActivity {
                     intent.putExtra("date", date);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(IndexActivity.this, "Choose a date.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(IndexActivity.this, "Choose a date", Toast.LENGTH_SHORT).show();
                 }
             }
         });

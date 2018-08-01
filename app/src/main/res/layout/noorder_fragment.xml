@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".NoOrderFragment"
-    android:background="@color/noorder_fragment_color"
-    >
+    android:background="@color/noorder_fragment_color">
 
     <!-- TODO: Update blank fragment layout -->
 
