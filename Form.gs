@@ -21,27 +21,27 @@ function onFormSubmit(e) {
   var dataToExport = {};
   
   dataToExport = 
-                   {  
-                    "name": name,
-                    "email":email,
-                    "phone":phone,
-                    "address":
-                     { 
-                       "flat":flat,
-                       "area":area,
-                     },
-                     "item": item,
-                     "quantity": quantity,
-                     "suggestion": suggestion
-                   };
+    {  
+      "name": name,
+      "email":email,
+      "phone":phone,
+      "address":
+      { 
+        "flat":flat,
+        "area":area
+      },
+      "item": item,
+      "quantity": quantity,
+      "suggestion": suggestion
+    };
 
   Logger.log(dataToExport);
   
-  var date = Utilities.formatDate(new Date(), "GMT+1", "dd_MM_yyyy");
-  
-  
+  var dateStr = getMethod(items[2]);
+  var date = Utilities.formatDate(new Date(dateStr), "GMT+1", "dd-MM-yyyy");
+                                  
   var base = FirebaseApp.getDatabaseByUrl('https://sendingresponse-64495.firebaseio.com/');
-  base.setData("orders/" + date + "/" + phone, dataToExport);
+  base.setData("orders/"+date+"/"+phone, dataToExport);
 }
 
 function getMethod(item) {
@@ -60,5 +60,3 @@ function getMethod(item) {
     return value;
   }
 }
-
-
