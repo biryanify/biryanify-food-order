@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 import android.view.View;
+import android.widget.TextView;
 
 
 import com.google.firebase.database.DataSnapshot;
@@ -23,16 +25,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerView;
+    
 
-//    private ProgressBar mProgressBar;
+    private RecyclerView mRecyclerView;
+    private TextView mTextView;
+    private SimpleDateFormat originalFormat, targetFormat;
 
     List<DailyOrder> dailyOrders = new ArrayList<>();
 
@@ -44,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mTextView = (TextView) findViewById(R.id.date_textview);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -85,6 +94,14 @@ public class MainActivity extends AppCompatActivity {
         Intent intent2 = getIntent();
         String date = intent2.getStringExtra("date");
 
+        originalFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        ParsePosition pos = new ParsePosition(0);
+        Date date1 = originalFormat.parse(date, pos);
+        targetFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
+        String formattedDate = targetFormat.format(date1);
+
+        mTextView.setText(formattedDate);
+
         mOrdersDatabaseReference.child("orders").child(date).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -96,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
                     OrderAdapter adapter = new OrderAdapter(dailyOrders);
                     mRecyclerView.setAdapter(adapter);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-//                    mProgressBar.setVisibility(View.INVISIBLE);
                 } else {
                     startActivity(
                             FragmentActivity.newInstance(

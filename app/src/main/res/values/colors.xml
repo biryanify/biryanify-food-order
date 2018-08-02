@@ -7,4 +7,5 @@
     <color name="noorder_text_color">#000000</color>
     <color name="recyclerview_color">#C0C0C0</color>
     <color name="vieworder_fragment_color">#20b2aa</color>
+    <color name="date_textview_color">#FFA500</color>
 </resources>
