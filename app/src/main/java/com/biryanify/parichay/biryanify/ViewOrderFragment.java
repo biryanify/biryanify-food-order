@@ -1,6 +1,5 @@
 package com.biryanify.parichay.biryanify;
 
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,10 +14,18 @@ public class ViewOrderFragment extends Fragment{
     public ViewOrderFragment() {
     }
 
+    public static ViewOrderFragment newInstance(DailyOrder dailyOrder) {
+        ViewOrderFragment viewOrderFragment = new ViewOrderFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("order", dailyOrder);
+        viewOrderFragment.setArguments(bundle);
+        return viewOrderFragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.vieworder_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_vieworder, container, false);
         viewOrder = view.findViewById(R.id.view_order_textView);
         Bundle bundle = getArguments();
         DailyOrder order = (DailyOrder) bundle.getParcelable("order");
@@ -27,7 +34,7 @@ public class ViewOrderFragment extends Fragment{
                 "\n\nEmail: "+order.getEmail()+
                 "\n\nItem: "+order.getItem()+
                 "\n\nQuantity: "+order.getQuantity()+
-                "\n\nAddress: "+order.getAddress().get("flat") +" "+order.getAddress().get("area");
+                "\n\nAddress: "+order.getAddress().get("flat") +", "+order.getAddress().get("area");
         viewOrder.setText(info);
         return view;
     }

@@ -66,16 +66,6 @@ public class IndexActivity extends AppCompatActivity {
         });
     }
 
-//    public void checkOrder(View view) {
-//        System.out.print("exec");
-//        editText = findViewById(R.id.getDate);
-//        String date = editText.getText().toString();
-//
-//        Intent intent = new Intent(this, MainActivity.class);
-//        intent.putExtra("date", date);
-//        startActivity(intent);
-//    }
-
 
     @Override
     protected void onResume() {

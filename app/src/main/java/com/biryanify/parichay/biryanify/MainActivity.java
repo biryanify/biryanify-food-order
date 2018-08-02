@@ -76,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
         String formattedDate = targetFormat.format(date1);
 
         mTextView.setText(formattedDate);
+        getSupportFragmentManager().addOnBackStackChangedListener(
+                new FragmentManager.OnBackStackChangedListener() {
+                    public void onBackStackChanged() {
+                    }
+                });
 
         mOrdersDatabaseReference.child("orders").child(date).addValueEventListener(new ValueEventListener() {
             @Override

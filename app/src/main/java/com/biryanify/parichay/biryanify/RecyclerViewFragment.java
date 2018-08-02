@@ -1,5 +1,8 @@
 package com.biryanify.parichay.biryanify;
 
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -9,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,12 +70,21 @@ public class RecyclerViewFragment extends Fragment {
 
                     @Override
                     public void onClick(View view, int position) {
-                        startActivity(
-                                FragmentActivity.newInstance(
-                                        getActivity(),
-                                        mDailyOrders.get(position),
-                                        "expand order")
-                        );
+                        MainActivity.fragmentManager.beginTransaction()
+                                .replace
+                                        (
+                                                R.id.fragment_container2,
+                                                ViewOrderFragment.newInstance(mDailyOrders.get(position)),
+                                                null
+                                        )
+                                .addToBackStack(null)
+                                .commit();
+//                       startActivity(
+//                                FragmentActivity.newInstance(
+//                                        getActivity(),
+//                                        mDailyOrders.get(position),
+//                                        "expand order")
+//                        );
                     }
                 }));
 
