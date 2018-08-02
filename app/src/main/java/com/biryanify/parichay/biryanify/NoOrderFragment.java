@@ -10,7 +10,11 @@ import android.view.ViewGroup;
 public class NoOrderFragment extends Fragment{
 
     public NoOrderFragment() {
+    }
 
+    public static NoOrderFragment newInstance() {
+        NoOrderFragment noOrderFragment = new NoOrderFragment();
+        return noOrderFragment;
     }
 
     @Override

@@ -2,10 +2,13 @@ package com.biryanify.parichay.biryanify;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 
+import android.support.design.internal.ParcelableSparseArray;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 
+import com.google.android.gms.common.internal.Constants;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,13 +41,13 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity {
 
-    
+    public static FragmentManager fragmentManager;
 
     private RecyclerView mRecyclerView;
     private TextView mTextView;
     private SimpleDateFormat originalFormat, targetFormat;
 
-    List<DailyOrder> dailyOrders = new ArrayList<>();
+    ArrayList<DailyOrder> dailyOrders = new ArrayList<>();
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mOrdersDatabaseReference;
@@ -53,39 +57,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fragmentManager = getSupportFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
         mTextView = (TextView) findViewById(R.id.date_textview);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        mRecyclerView.addItemDecoration(itemDecoration);
-
-        mRecyclerView.setItemAnimator(new SlideInUpAnimator());
-
-        mRecyclerView.addOnItemTouchListener(new MyTouchListener(this, mRecyclerView,
-                new MyTouchListener.OnTouchActionListener() {
-                    @Override
-                    public void onLeftSwipe(View view, int position) {
-
-                    }
-
-                    @Override
-                    public void onRightSwipe(View view, int position) {
-
-                    }
-
-                    @Override
-                    public void onClick(View view, int position) {
-                        startActivity(
-                                FragmentActivity.newInstance(
-                                        MainActivity.this,
-                                        dailyOrders.get(position),
-                                        "expand order")
-                        );
-                    }
-                }));
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
@@ -110,16 +85,21 @@ public class MainActivity extends AppCompatActivity {
                         DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
                         dailyOrders.add(dailyOrder);
                     }
-                    OrderAdapter adapter = new OrderAdapter(dailyOrders);
-                    mRecyclerView.setAdapter(adapter);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    fragmentTransaction.add
+                            (
+                                    R.id.fragment_container2,
+                                    RecyclerViewFragment.newInstance(dailyOrders),
+                                    null
+                            );
+                    fragmentTransaction.commit();
                 } else {
-                    startActivity(
-                            FragmentActivity.newInstance(
-                                MainActivity.this,
-                                "no orders")
-                    );
-                    finish();
+                    fragmentTransaction.add
+                            (
+                                R.id.fragment_container2,
+                                NoOrderFragment.newInstance(),
+                                null
+                            );
+                    fragmentTransaction.commit();
                 }
             }
 

@@ -21,13 +21,13 @@ public class ViewOrderFragment extends Fragment{
         View view = inflater.inflate(R.layout.vieworder_fragment, container, false);
         viewOrder = view.findViewById(R.id.view_order_textView);
         Bundle bundle = getArguments();
-        DailyOrder order = (DailyOrder) bundle.getSerializable("order");
+        DailyOrder order = (DailyOrder) bundle.getParcelable("order");
         String info = "Name: "+order.getName()+
                 "\n\nPhone: "+order.getPhone()+
                 "\n\nEmail: "+order.getEmail()+
                 "\n\nItem: "+order.getItem()+
                 "\n\nQuantity: "+order.getQuantity()+
-                "\n\nAddress: "+order.getAddress().get("flat") +" "+ order.getAddress().get("area");
+                "\n\nAddress: "+order.getAddress().get("flat") +" "+order.getAddress().get("area");
         viewOrder.setText(info);
         return view;
     }
