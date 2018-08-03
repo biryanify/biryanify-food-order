@@ -61,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fragmentManager = getSupportFragmentManager();
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         mTextView = (TextView) findViewById(R.id.date_textview);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -84,26 +81,29 @@ public class MainActivity extends AppCompatActivity {
         mOrdersDatabaseReference.child("orders").child(dbDate).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 if(dataSnapshot.getValue() != null) {
+                    dailyOrders.clear();
                     for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
                         DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
                         dailyOrders.add(dailyOrder);
                     }
-                    fragmentTransaction.add
+                    fragmentTransaction.replace
                             (
                                     R.id.fragment_container2,
                                     RecyclerViewFragment.newInstance(dailyOrders),
                                     null
                             );
-                    fragmentTransaction.commit();
+                    fragmentTransaction.commitAllowingStateLoss();
                 } else {
-                    fragmentTransaction.add
+                    fragmentTransaction.replace
                             (
                                 R.id.fragment_container2,
                                 NoOrderFragment.newInstance(),
                                 null
                             );
-                    fragmentTransaction.commit();
+                    fragmentTransaction.commitAllowingStateLoss();
                 }
             }
 
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == Activity.RESULT_OK) {
                 DailyOrder dailyOrder = data.getParcelableExtra("order");
                 Toast.makeText(this, dailyOrder.getName(), Toast.LENGTH_SHORT).show();
-//                writeData(dailyOrder);
+                writeData(dailyOrder);
             }
         }
     }
