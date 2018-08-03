@@ -17,8 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.common.internal.Constants;
@@ -34,8 +36,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
@@ -43,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static FragmentManager fragmentManager;
 
-    private RecyclerView mRecyclerView;
     private TextView mTextView;
     private SimpleDateFormat originalFormat, targetFormat;
+    private String date, dbDate;
 
     ArrayList<DailyOrder> dailyOrders = new ArrayList<>();
 
@@ -67,22 +71,17 @@ public class MainActivity extends AppCompatActivity {
         mOrdersDatabaseReference = mFirebaseDatabase.getReference();
 
         Intent intent2 = getIntent();
-        String date = intent2.getStringExtra("date");
+        dbDate = intent2.getStringExtra("date");
 
         originalFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         ParsePosition pos = new ParsePosition(0);
-        Date date1 = originalFormat.parse(date, pos);
+        Date originalDate = originalFormat.parse(dbDate, pos);
         targetFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-        String formattedDate = targetFormat.format(date1);
+        date = targetFormat.format(originalDate);
 
-        mTextView.setText(formattedDate);
-        getSupportFragmentManager().addOnBackStackChangedListener(
-                new FragmentManager.OnBackStackChangedListener() {
-                    public void onBackStackChanged() {
-                    }
-                });
+        mTextView.setText(date);
 
-        mOrdersDatabaseReference.child("orders").child(date).addValueEventListener(new ValueEventListener() {
+        mOrdersDatabaseReference.child("orders").child(dbDate).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() != null) {
@@ -120,5 +119,49 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_order_menu:
+                addOrder();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void addOrder() {
+        startActivityForResult(FragmentActivity.newInstance(
+                this,
+                "add order",
+                date),
+                1
+        );
+    }
+
+    private void writeData(DailyOrder dailyOrder) {
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mOrdersDatabaseReference = mFirebaseDatabase.getReference();
+
+        Map<String, Object> order = dailyOrder.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/orders/"+dbDate+"/"+dailyOrder.getPhone(), order);
+
+        mOrdersDatabaseReference.updateChildren(childUpdates);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK) {
+                DailyOrder dailyOrder = data.getParcelableExtra("order");
+                Toast.makeText(this, dailyOrder.getName(), Toast.LENGTH_SHORT).show();
+//                writeData(dailyOrder);
+            }
+        }
     }
 }

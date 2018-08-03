@@ -3,6 +3,8 @@ package com.biryanify.parichay.biryanify;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,9 +26,11 @@ public class DailyOrder implements Parcelable {
         phone = "";
         email = "";
         item = "";
-        suggestion = "";
+        suggestion = "_unknown_";
         quantity = "";
         address = new HashMap<String, String>();
+        address.put("area", "");
+        address.put("flat", "");
     }
 
 
@@ -136,5 +140,19 @@ public class DailyOrder implements Parcelable {
             return new DailyOrder[size];
         }
     };
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("name", name);
+        result.put("phone", phone);
+        result.put("email", email);
+        result.put("item", item);
+        result.put("quantity", quantity);
+        result.put("address", address);
+        result.put("suggestion", suggestion);
+        return result;
+    }
+
 
 }

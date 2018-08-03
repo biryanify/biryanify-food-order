@@ -58,6 +58,7 @@ public class IndexActivity extends AppCompatActivity {
                 if(date.length() != 0) {
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
                     intent.putExtra("date", date);
+                    intent.putExtra("SENDER_KEY", "index activity");
                     startActivity(intent);
                 } else {
                     Toast.makeText(IndexActivity.this, "Choose a date", Toast.LENGTH_SHORT).show();

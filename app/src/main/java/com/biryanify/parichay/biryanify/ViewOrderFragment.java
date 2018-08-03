@@ -34,7 +34,8 @@ public class ViewOrderFragment extends Fragment{
                 "\n\nEmail: "+order.getEmail()+
                 "\n\nItem: "+order.getItem()+
                 "\n\nQuantity: "+order.getQuantity()+
-                "\n\nAddress: "+order.getAddress().get("flat") +", "+order.getAddress().get("area");
+                "\n\nAddress: "+order.getAddress().get("flat") +", "+order.getAddress().get("area")+
+                "\n\nSuggestion: "+order.getSuggestion();
         viewOrder.setText(info);
         return view;
     }
