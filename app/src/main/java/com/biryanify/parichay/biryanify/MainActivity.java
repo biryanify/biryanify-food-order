@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 
 import com.google.android.gms.common.internal.Constants;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,20 +56,22 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mOrdersDatabaseReference;
+    private ValueEventListener mOrderDatabaseReferenceListener;
+    private ChildEventListener mChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent2 = getIntent();
+        dbDate = intent2.getStringExtra("date");
+
         mTextView = (TextView) findViewById(R.id.date_textview);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
 
         mOrdersDatabaseReference = mFirebaseDatabase.getReference();
-
-        Intent intent2 = getIntent();
-        dbDate = intent2.getStringExtra("date");
 
         originalFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
         ParsePosition pos = new ParsePosition(0);
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         mTextView.setText(date);
 
-        mOrdersDatabaseReference.child("orders").child(dbDate).addValueEventListener(new ValueEventListener() {
+        mOrderDatabaseReferenceListener = mOrdersDatabaseReference.child("orders").child(dbDate).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 fragmentManager = getSupportFragmentManager();
@@ -115,6 +118,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mOrdersDatabaseReference.removeEventListener(mOrderDatabaseReferenceListener);
+    }
+
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
@@ -141,18 +152,6 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void writeData(DailyOrder dailyOrder) {
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mOrdersDatabaseReference = mFirebaseDatabase.getReference();
-
-        Map<String, Object> order = dailyOrder.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/orders/"+dbDate+"/"+dailyOrder.getPhone(), order);
-
-        mOrdersDatabaseReference.updateChildren(childUpdates);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -163,5 +162,17 @@ public class MainActivity extends AppCompatActivity {
                 writeData(dailyOrder);
             }
         }
+    }
+
+    private void writeData(DailyOrder dailyOrder) {
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mOrdersDatabaseReference = mFirebaseDatabase.getReference();
+
+        Map<String, Object> order = dailyOrder.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/orders/"+dbDate+"/"+dailyOrder.getPhone(), order);
+
+        mOrdersDatabaseReference.updateChildren(childUpdates);
     }
 }
