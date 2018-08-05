@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Biryanify</string>
     <string name="sign_out">Sign out</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
 </resources>

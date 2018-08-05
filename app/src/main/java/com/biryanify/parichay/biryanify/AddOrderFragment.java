@@ -54,6 +54,8 @@ public class AddOrderFragment extends Fragment {
         Bundle bundle = getArguments();
         date = bundle.getString("date");
 
+
+
         nameEdittext = view.findViewById(R.id.name_edittext);
         phoneEdittext = view.findViewById(R.id.phone_editText);
         emailEdittext = view.findViewById(R.id.email_edittext);
@@ -97,6 +99,7 @@ public class AddOrderFragment extends Fragment {
 
     private void sendData(DailyOrder order)
     {
+
         mCallback.communicate(order);
     }
 

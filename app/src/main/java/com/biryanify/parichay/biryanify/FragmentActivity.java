@@ -4,22 +4,46 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FragmentActivity extends AppCompatActivity implements FragmentToActivity{
+import com.google.android.gms.common.util.BiConsumer;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class FragmentActivity extends AppCompatActivity implements FragmentToActivity {
     private TextView dateTextView;
+
 
     public static Intent newInstance(Activity from, String orderCommand, String date) {
         Intent intent = new Intent(from, FragmentActivity.class);
         intent.putExtra("date", date);
         intent.putExtra("extra", orderCommand);
+
+        FragmentToActivity fragmentToActivity = new FragmentToActivity() {
+            @Override
+            public void communicate(DailyOrder dailyOrder) {
+
+            }
+        };
+
         return intent;
     }
-    @Override
+
     public void communicate(DailyOrder dailyOrder) {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("order", (Parcelable) dailyOrder);
