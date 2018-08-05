@@ -79,12 +79,6 @@ public class RecyclerViewFragment extends Fragment {
                                         )
                                 .addToBackStack(null)
                                 .commit();
-//                       startActivity(
-//                                FragmentActivity.newInstance(
-//                                        getActivity(),
-//                                        mDailyOrders.get(position),
-//                                        "expand order")
-//                        );
                     }
                 }));
 
