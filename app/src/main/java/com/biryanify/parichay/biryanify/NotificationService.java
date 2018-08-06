@@ -31,8 +31,6 @@ public class NotificationService extends FirebaseMessagingService {
         Date addOrderDate = originalFormat.parse(remoteMessage.getData().get("serverTimeStamp"), pos);
         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
         String timeDate = timeFormat.format(addOrderDate);
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyy");
-//        String dateDate = dateFormat.format(addOrderDate);
 
         String orderDate = remoteMessage.getData().get("orderDate");
 

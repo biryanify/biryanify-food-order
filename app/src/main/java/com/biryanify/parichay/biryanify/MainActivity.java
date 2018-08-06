@@ -2,32 +2,23 @@ package com.biryanify.parichay.biryanify;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 
-import android.support.design.internal.ParcelableSparseArray;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.android.gms.common.internal.Constants;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,14 +31,10 @@ import com.google.firebase.iid.InstanceIdResult;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextView;
     private SimpleDateFormat originalFormat, targetFormat;
+
     private String date, dbDate;
 
     ArrayList<DailyOrder> dailyOrders = new ArrayList<>();
@@ -94,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         // Log and toast
                         String msg = getString(R.string.msg_token_fmt, token);
                         Log.d(TAG, msg);
-//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                        //  Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -120,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     fragmentTransaction.replace
                             (
                                     R.id.fragment_container2,
-                                    RecyclerViewFragment.newInstance(dailyOrders),
+                                    RecyclerViewFragment.newInstance(dailyOrders, date),
                                     null
                             );
                     fragmentTransaction.commitAllowingStateLoss();
@@ -148,12 +136,10 @@ public class MainActivity extends AppCompatActivity {
         mOrdersDatabaseReference.removeEventListener(mOrderDatabaseReferenceListener);
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.add_menu, menu);
         return true;
     }
 
@@ -177,13 +163,14 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
                 DailyOrder dailyOrder = data.getParcelableExtra("order");
-                Toast.makeText(this, dailyOrder.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Orded Added", Toast.LENGTH_SHORT).show();
                 writeData(dailyOrder);
             }
         }

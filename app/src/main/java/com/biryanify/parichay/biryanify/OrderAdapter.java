@@ -22,12 +22,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
             nameTextView = (TextView) orderView.findViewById(R.id.nameTextView);
             phoneTextView = (TextView) orderView.findViewById(R.id.phoneTextView);
         }
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-        }
-        public void onClick(View view) {
-
-        }
     }
 
     public OrderAdapter(List<DailyOrder> dailyOrders) {

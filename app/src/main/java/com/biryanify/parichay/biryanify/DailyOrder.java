@@ -88,8 +88,11 @@ public class DailyOrder implements Parcelable {
         return address;
     }
 
-    public void setAddress(Map<String, String> address) {
+    public void setFlat(Map<String, String> address) {
         this.address = address;
+    }
+    public void setFlat(String val) {
+        address.put("flat", val);
     }
 
     protected DailyOrder(Parcel in) {
@@ -103,7 +106,7 @@ public class DailyOrder implements Parcelable {
         time = in.readString();
         int size = in.readInt();
         address = new HashMap<String, String>();
-        for(int i = 0; i < size; i++){
+        for(int i = 0; i < size; i++) {
             String key = in.readString();
             String value = in.readString();
             address.put(key,value);

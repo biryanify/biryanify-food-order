@@ -4,5 +4,7 @@
     <item
         android:id="@+id/add_order_menu"
         android:title="Add Order"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_add_black_24dp"/>
+
 </menu>

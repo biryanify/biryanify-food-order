@@ -1,9 +1,7 @@
 package com.biryanify.parichay.biryanify;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,18 +18,14 @@ import java.util.Map;
 public class AddOrderFragment extends Fragment {
     private EditText nameEdittext, phoneEdittext, emailEdittext, itemEdittext, quantityEdittext, addressEdittext;
     private Button saveButton;
-    private String date;
 
     private FragmentToActivity mCallback;
 
     public AddOrderFragment() {
     }
 
-    public static AddOrderFragment newInstance(String date) {
+    public static AddOrderFragment newInstance() {
         AddOrderFragment addOrderFragment = new AddOrderFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("date", date);
-        addOrderFragment.setArguments(bundle);
         return addOrderFragment;
     }
 
@@ -50,11 +44,6 @@ public class AddOrderFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_addorder, container, false);
-
-        Bundle bundle = getArguments();
-        date = bundle.getString("date");
-
-
 
         nameEdittext = view.findViewById(R.id.name_edittext);
         phoneEdittext = view.findViewById(R.id.phone_editText);
@@ -78,7 +67,7 @@ public class AddOrderFragment extends Fragment {
                 Map<String, String> address = new HashMap<>();
                 address.put("flat", addressEdittext.getText().toString());
                 address.put("area", "");
-                dailyOrder.setAddress(address);
+                dailyOrder.setFlat(address);
 
                 sendData(dailyOrder);
             }
@@ -97,9 +86,7 @@ public class AddOrderFragment extends Fragment {
                 Toast.LENGTH_SHORT).show();
     }
 
-    private void sendData(DailyOrder order)
-    {
-
+    private void sendData(DailyOrder order) {
         mCallback.communicate(order);
     }
 

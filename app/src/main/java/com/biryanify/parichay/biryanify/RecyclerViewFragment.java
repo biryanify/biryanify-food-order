@@ -9,6 +9,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -21,15 +23,18 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 public class RecyclerViewFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ArrayList<DailyOrder> mDailyOrders;
+    String date;
 
     public RecyclerViewFragment() {
-
+        mDailyOrders = new ArrayList<>();
+        date = "";
     }
 
-    public static RecyclerViewFragment newInstance(ArrayList<DailyOrder> dailyOrders) {
+    public static RecyclerViewFragment newInstance(ArrayList<DailyOrder> dailyOrders, String date) {
         RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("orders", dailyOrders);
+        bundle.putString("date", date);
         recyclerViewFragment.setArguments(bundle);
         return recyclerViewFragment;
     }
@@ -38,6 +43,7 @@ public class RecyclerViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recyclerview, container, false);
+
         mRecyclerView = view.findViewById(R.id.my_recycler_view);
 
         mRecyclerView.setHasFixedSize(true);
@@ -50,6 +56,7 @@ public class RecyclerViewFragment extends Fragment {
 
         Bundle bundle = getArguments();
         mDailyOrders = bundle.getParcelableArrayList("orders");
+        date = bundle.getString("date");
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -71,14 +78,14 @@ public class RecyclerViewFragment extends Fragment {
                     @Override
                     public void onClick(View view, int position) {
                         MainActivity.fragmentManager.beginTransaction()
-                                .replace
-                                        (
-                                                R.id.fragment_container2,
-                                                ViewOrderFragment.newInstance(mDailyOrders.get(position)),
-                                                null
-                                        )
-                                .addToBackStack(null)
-                                .commit();
+                            .replace
+                                (
+                                    R.id.fragment_container2,
+                                    ViewOrderFragment.newInstance(mDailyOrders.get(position), date),
+                                    null
+                                )
+                            .addToBackStack(null)
+                            .commit();
                     }
                 }));
 

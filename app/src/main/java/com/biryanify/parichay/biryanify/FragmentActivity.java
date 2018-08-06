@@ -33,14 +33,13 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
         Intent intent = new Intent(from, FragmentActivity.class);
         intent.putExtra("date", date);
         intent.putExtra("extra", orderCommand);
-
-        FragmentToActivity fragmentToActivity = new FragmentToActivity() {
-            @Override
-            public void communicate(DailyOrder dailyOrder) {
-
-            }
-        };
-
+        return intent;
+    }
+    public static Intent newInstance(Activity from, String orderCommand, String date, DailyOrder order) {
+        Intent intent = new Intent(from, FragmentActivity.class);
+        intent.putExtra("date", date);
+        intent.putExtra("extra", orderCommand);
+        intent.putExtra("order", (Parcelable)order);
         return intent;
     }
 
@@ -81,7 +80,15 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
             fragmentTransaction.
                     add(
                             R.id.fragment_container1,
-                            AddOrderFragment.newInstance(date),
+                            AddOrderFragment.newInstance(),
+                            null
+                    );
+            fragmentTransaction.commit();
+        } else if(intentStringExtra.equals("edit order")) {
+            fragmentTransaction.
+                    add(
+                            R.id.fragment_container1,
+                            EditOrderFragment.newInstance(intent.getParcelableExtra("order")),
                             null
                     );
             fragmentTransaction.commit();
