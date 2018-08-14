@@ -17,123 +17,125 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    private long totalOrders;
+    TextView dateTextView, totalOrdersTextView;
+
     public static FragmentManager fragmentManager;
 
-    private TextView mTextView;
-    private SimpleDateFormat originalFormat, targetFormat;
+    private ArrayList<DailyOrder> dailyOrders;
+    
+    private DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference();
+    private ValueEventListener ordersRefListener;
 
-    private String date, dbDate;
-
-    ArrayList<DailyOrder> dailyOrders = new ArrayList<>();
-
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mOrdersDatabaseReference;
-    private ValueEventListener mOrderDatabaseReferenceListener;
+    private SingletonDateClass instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent2 = getIntent();
-        dbDate = intent2.getStringExtra("date");
+        dailyOrders = new ArrayList<>();
 
-        mTextView = (TextView) findViewById(R.id.date_textview);
+        instance = SingletonDateClass.getInstance();
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        dateTextView = (TextView) findViewById(R.id.date_textview);
+        totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
 
-        mOrdersDatabaseReference = mFirebaseDatabase.getReference();
+        dateTextView.setText(instance.hrDate);
+        totalOrdersTextView.setText("Loading..");
 
+        logInstanceID();
+
+        reflectChanges();
+
+    }
+
+    private void logInstanceID() {
         FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            .addOnCompleteListener(task -> {
+
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "getInstanceId failed", task.getException());
+                    return;
+                }
+
+                // Get new Instance ID token
+                String token = task.getResult().getToken();
+
+                // Log and toast
+                String msg = getString(R.string.msg_token_fmt, token);
+                Log.d(TAG, msg);
+            }
+        );
+    }
+
+    private void reflectChanges() {
+
+        ordersRefListener =
+            ordersRef
+                .child("orders")
+                .child(instance.dbDate)
+                .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "getInstanceId failed", task.getException());
-                            return;
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction =
+                                fragmentManager.beginTransaction();
+                        if(dataSnapshot.getValue() != null) {
+                            dailyOrders.clear();
+                            totalOrders = 0;
+                            for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
+                                DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
+                                totalOrders += Long.parseLong(dailyOrder.getQuantity());
+                                dailyOrders.add(dailyOrder);
+                            }
+                            totalOrdersTextView.setText("Total Orders: " + totalOrders);
+                            fragmentTransaction.replace
+                                    (
+                                            R.id.fragment_container2,
+                                            RecyclerViewFragment.newInstance(dailyOrders),
+                                            null
+                                    );
+                            fragmentTransaction.commitAllowingStateLoss();
+                        } else {
+                            totalOrdersTextView.setText("Total Orders: 0" );
+                            fragmentTransaction.replace
+                                    (
+                                            R.id.fragment_container2,
+                                            NoOrderFragment.newInstance(),
+                                            null
+                                    );
+                            fragmentTransaction.commitAllowingStateLoss();
                         }
+                    }
 
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-
-                        // Log and toast
-                        String msg = getString(R.string.msg_token_fmt, token);
-                        Log.d(TAG, msg);
-                        //  Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        System.out.println("The read failed: " + databaseError.getCode());
                     }
                 });
-
-        originalFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
-        ParsePosition pos = new ParsePosition(0);
-        Date originalDate = originalFormat.parse(dbDate, pos);
-        targetFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-        date = targetFormat.format(originalDate);
-
-        mTextView.setText(date);
-
-        mOrderDatabaseReferenceListener = mOrdersDatabaseReference.child("orders").child(dbDate).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                if(dataSnapshot.getValue() != null) {
-                    dailyOrders.clear();
-                    for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
-                        DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
-                        dailyOrders.add(dailyOrder);
-                    }
-                    fragmentTransaction.replace
-                            (
-                                    R.id.fragment_container2,
-                                    RecyclerViewFragment.newInstance(dailyOrders, date),
-                                    null
-                            );
-                    fragmentTransaction.commitAllowingStateLoss();
-                } else {
-                    fragmentTransaction.replace
-                            (
-                                R.id.fragment_container2,
-                                NoOrderFragment.newInstance(),
-                                null
-                            );
-                    fragmentTransaction.commitAllowingStateLoss();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mOrdersDatabaseReference.removeEventListener(mOrderDatabaseReferenceListener);
+        ordersRef.removeEventListener(ordersRefListener);
     }
 
     @Override
@@ -157,8 +159,7 @@ public class MainActivity extends AppCompatActivity {
     public void addOrder() {
         startActivityForResult(FragmentActivity.newInstance(
                 this,
-                "add order",
-                date),
+                "add order"),
                 1
         );
     }
@@ -177,14 +178,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeData(DailyOrder dailyOrder) {
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mOrdersDatabaseReference = mFirebaseDatabase.getReference();
 
         Map<String, Object> order = dailyOrder.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/orders/"+dbDate+"/"+dailyOrder.getPhone(), order);
+        childUpdates.put("/orders/"+instance.dbDate+"/"+dailyOrder.getPhone(), order);
 
-        mOrdersDatabaseReference.updateChildren(childUpdates);
+        ordersRef.updateChildren(childUpdates);
     }
 }

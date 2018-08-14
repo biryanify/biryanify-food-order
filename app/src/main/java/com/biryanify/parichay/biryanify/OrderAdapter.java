@@ -5,51 +5,37 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
-    private List<DailyOrder> mDailyOrders;
+public class OrderAdapter extends RecyclerView.Adapter<OrderHolder> {
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView nameTextView;
-        public TextView phoneTextView;
-        public ViewHolder(View orderView) {
-            super(orderView);
-
-            nameTextView = (TextView) orderView.findViewById(R.id.nameTextView);
-            phoneTextView = (TextView) orderView.findViewById(R.id.phoneTextView);
-        }
-    }
+    private List<DailyOrder> dailyOrders;
 
     public OrderAdapter(List<DailyOrder> dailyOrders) {
-        mDailyOrders = dailyOrders;
+        this.dailyOrders = dailyOrders;
     }
 
     @Override
-    public OrderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OrderHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-
         View orderView = inflater.inflate(R.layout.item_order, parent, false);
-        ViewHolder vh = new ViewHolder(orderView);
-
-        return vh;
+        return new OrderHolder(orderView,R.id.nameTextView, R.id.ordersTextView);
     }
 
-    public void onBindViewHolder(OrderAdapter.ViewHolder holder, int position) {
-        DailyOrder order = mDailyOrders.get(position);
+    @Override
+    public void onBindViewHolder(final OrderHolder holder, int position) {
+        DailyOrder order = dailyOrders.get(position);
 
-        TextView textView = holder.nameTextView;
-        textView.setText(order.getName());
-        TextView textView1 = holder.phoneTextView;
-        textView1.setText(order.getPhone());
+        holder.nameTextView.setText(order.getName());
+        String orderText = "Orders: " + order.getQuantity();
+        holder.ordersTextView.setText(orderText);
     }
 
     @Override
     public int getItemCount() {
-        return mDailyOrders.size();
+        return dailyOrders.size();
     }
 }

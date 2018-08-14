@@ -17,6 +17,7 @@
         android:layout_marginTop="20dp"
         android:textColor="@color/vieworder_text_color"
         android:textSize="25sp"
+        android:autoLink="phone|email|map"
         android:fontFamily="@font/happytimesfamily"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

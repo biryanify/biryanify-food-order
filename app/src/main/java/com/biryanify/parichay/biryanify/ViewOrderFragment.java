@@ -20,20 +20,17 @@ public class ViewOrderFragment extends Fragment{
     private TextView viewOrder;
     private String info;
     DailyOrder order;
-    String date;
 
     public ViewOrderFragment() {
         info = "";
         order = new DailyOrder();
-        date = "";
     }
 
 
-    public static ViewOrderFragment newInstance(DailyOrder dailyOrder, String date) {
+    public static ViewOrderFragment newInstance(DailyOrder dailyOrder) {
         ViewOrderFragment viewOrderFragment = new ViewOrderFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("order", dailyOrder);
-        bundle.putString("date", date);
         viewOrderFragment.setArguments(bundle);
         return viewOrderFragment;
     }
@@ -55,7 +52,6 @@ public class ViewOrderFragment extends Fragment{
 
         Bundle bundle = getArguments();
         order = bundle.getParcelable("order");
-        date = bundle.getString("date");
 
         info += "Name: "+order.getName()+
                 "\n\nPhone: "+order.getPhone()+
@@ -66,8 +62,7 @@ public class ViewOrderFragment extends Fragment{
                 "\n\nSuggestion: "+order.getSuggestion();
 
         if(!order.getTime().equals("_unknown_")) {
-
-            String date = DateFormat.format("EEE, dd/MM/yyyy hh:mm, aaa", getCal(order.getTime())).toString();
+            String date = DateFormat.format("EEE, dd/MM/yyyy, hh:mm aaa", getCal(order.getTime())).toString();
             info += "\n\nOrder placed on: " + date;
         }
 
@@ -97,7 +92,6 @@ public class ViewOrderFragment extends Fragment{
                 FragmentActivity.newInstance(
                         getActivity(),
                         "edit order",
-                        date,
                         order),
                 1
         );
