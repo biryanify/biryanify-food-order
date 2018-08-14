@@ -22,12 +22,12 @@ public class IndexActivity extends AppCompatActivity {
     private TextView editText;
     private Button mButton;
     private DatePickerDialog datePickerDialog;
-    private SimpleDateFormat dbFormat;
+
     private SingletonDateClass instance;
 
     private void setDate() {
 
-        dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
         editText = findViewById(R.id.getDate);
 
@@ -43,16 +43,6 @@ public class IndexActivity extends AppCompatActivity {
                     instance.dbDate = dbFormat.format(newDate.getTime());
 
                     editText.setText(instance.dbDate);
-
-                    // setting human readable format of date
-                    ParsePosition pos = new ParsePosition(0);
-                    Date originalDate = dbFormat.parse(instance.dbDate, pos);
-                    SimpleDateFormat targetFormat = new SimpleDateFormat
-                            (
-                                    "EEE, MMM dd, yyyy",
-                                    Locale.US
-                            );
-                    instance.hrDate = targetFormat.format(originalDate);
                 };
 
         datePickerDialog = new DatePickerDialog(

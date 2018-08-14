@@ -97,7 +97,6 @@ public class ViewOrderFragment extends Fragment{
         );
     }
 
-
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.add_order_menu).setVisible(false);

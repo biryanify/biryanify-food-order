@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/vieworder_fragment_color"
+    android:background="@color/itemorder_fragment_color"
     >
 
     <TextView
@@ -15,7 +15,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
-        android:textColor="@color/vieworder_text_color"
+        android:textColor="@color/black"
         android:textSize="25sp"
         android:autoLink="phone|email|map"
         android:fontFamily="@font/happytimesfamily"

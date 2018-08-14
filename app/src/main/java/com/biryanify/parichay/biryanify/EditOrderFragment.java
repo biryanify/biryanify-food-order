@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,8 +18,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class EditOrderFragment extends Fragment{
-    private Button saveButton;
 
+    DailyOrder order;
     private FragmentToActivity mCallback;
 
     public EditOrderFragment() {
@@ -39,10 +42,6 @@ public class EditOrderFragment extends Fragment{
             throw new ClassCastException(context.toString()
                     + " must implement FragmentToActivity");
         }
-    }
-
-    public interface Consumer<T> {
-        void accept(T data);
     }
 
     public <T> void reflect(View view, int eID, Consumer<String> onTextChanged) {
@@ -85,8 +84,8 @@ public class EditOrderFragment extends Fragment{
     }
 
     private void editOrder(View view, DailyOrder order) {
+        // will not be able to edit phone number because it is unique id in db
         reflect(view, R.id.name_edittext, order::setName);
-//        reflect(view, R.id.phone_editText, order::setPhone);
         reflect(view, R.id.email_edittext, order::setEmail);
         reflect(view, R.id.item_edittext, order::setItem);
         reflect(view, R.id.quantity_edittext, order::setQuantity);
@@ -98,14 +97,13 @@ public class EditOrderFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_addorder, container, false);
 
+        setHasOptionsMenu(true);
+
         Bundle bundle = getArguments();
-        DailyOrder order = (DailyOrder) bundle.getParcelable("order");
+        order = (DailyOrder) bundle.getParcelable("order");
 
         buildFields(view, order);
         editOrder(view, order);
-
-        saveButton = view.findViewById(R.id.save_order_button);
-        saveButton.setOnClickListener(v -> sendOrder(order));
 
         return view;
     }
@@ -120,7 +118,20 @@ public class EditOrderFragment extends Fragment{
         Toast.makeText(getActivity(), "Fragment : Refresh called.",
                 Toast.LENGTH_SHORT).show();
     }
+
     private void sendOrder(DailyOrder order) {
         mCallback.communicate(order);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_order_menu:
+                sendOrder(order);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

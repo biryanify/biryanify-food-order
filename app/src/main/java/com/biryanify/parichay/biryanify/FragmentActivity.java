@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.TextView;
 
 public class FragmentActivity extends AppCompatActivity implements FragmentToActivity {
@@ -75,4 +77,12 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
             fragmentTransaction.commit();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.save_menu, menu);
+        return true;
+    }
+
 }

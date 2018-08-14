@@ -19,7 +19,7 @@
         android:layout_marginTop="150dp"
         android:text="No Orders"
         android:textAlignment="center"
-        android:textColor="@color/noorder_text_color"
+        android:textColor="@color/white"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

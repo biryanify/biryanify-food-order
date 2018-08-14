@@ -4,6 +4,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -37,22 +39,23 @@ public class NotificationService extends FirebaseMessagingService {
         createNotificationChannel();
 
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("date", orderDate);
+        SingletonDateClass.getInstance().dbDate = orderDate;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        PendingIntent pendingIntent = PendingIntent
-                .getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.ic_food_black_24dp);
-        builder.setContentTitle(remoteMessage.getData().get("title"));
-        builder.setContentText(remoteMessage.getData().get("body"));
-        builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        builder.setAutoCancel(true);
-        builder.setWhen(addOrderDate.getTime());
-        builder.setShowWhen(true);
-        builder.setContentIntent(pendingIntent);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_food_white_24dp)
+                .setContentTitle(remoteMessage.getData().get("title"))
+                .setContentText(remoteMessage.getData().get("body"))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setWhen(addOrderDate.getTime())
+                .setShowWhen(true)
+                .setSound(alarmSound)
+                .setContentIntent(pendingIntent);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());

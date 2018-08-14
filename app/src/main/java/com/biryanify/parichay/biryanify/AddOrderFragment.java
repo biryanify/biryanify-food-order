@@ -5,7 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,17 +22,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddOrderFragment extends Fragment {
-    private EditText nameEdittext, phoneEdittext, emailEdittext, itemEdittext, quantityEdittext, addressEdittext;
-    private Button saveButton;
 
     private FragmentToActivity mCallback;
+    private DailyOrder order;
 
     public AddOrderFragment() {
     }
 
     public static AddOrderFragment newInstance() {
-        AddOrderFragment addOrderFragment = new AddOrderFragment();
-        return addOrderFragment;
+        return new AddOrderFragment();
     }
 
     @Override
@@ -40,38 +44,45 @@ public class AddOrderFragment extends Fragment {
         }
     }
 
+    public <T> void reflect(View view, int eID, Consumer<String> onTextChanged) {
+        EditText editText = view.findViewById(eID);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                onTextChanged.accept(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void addOrder(View view, DailyOrder order) {
+        reflect(view, R.id.name_edittext, order::setName);
+        reflect(view, R.id.phone_editText, order::setPhone);
+        reflect(view, R.id.email_edittext, order::setEmail);
+        reflect(view, R.id.item_edittext, order::setItem);
+        reflect(view, R.id.quantity_edittext, order::setQuantity);
+        reflect(view, R.id.address_edittext, order::setFlat);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_addorder, container, false);
 
-        nameEdittext = view.findViewById(R.id.name_edittext);
-        phoneEdittext = view.findViewById(R.id.phone_editText);
-        emailEdittext = view.findViewById(R.id.email_edittext);
-        itemEdittext = view.findViewById(R.id.item_edittext);
-        quantityEdittext = view.findViewById(R.id.quantity_edittext);
-        addressEdittext = view.findViewById(R.id.address_edittext);
+        setHasOptionsMenu(true);
 
-        saveButton = view.findViewById(R.id.save_order_button);
+        order = new DailyOrder();
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        addOrder(view, order);
 
-                final DailyOrder dailyOrder = new DailyOrder();
-                dailyOrder.setName(nameEdittext.getText().toString());
-                dailyOrder.setPhone(phoneEdittext.getText().toString());
-                dailyOrder.setEmail(emailEdittext.getText().toString());
-                dailyOrder.setItem(itemEdittext.getText().toString());
-                dailyOrder.setQuantity(quantityEdittext.getText().toString());
-                Map<String, String> address = new HashMap<>();
-                address.put("flat", addressEdittext.getText().toString());
-                address.put("area", "");
-                dailyOrder.setFlat(address);
-
-                sendData(dailyOrder);
-            }
-        });
         return view;
     }
 
@@ -88,6 +99,18 @@ public class AddOrderFragment extends Fragment {
 
     private void sendData(DailyOrder order) {
         mCallback.communicate(order);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_order_menu:
+                Toast.makeText(getContext(), "hello", Toast.LENGTH_SHORT).show();
+                sendData(order);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

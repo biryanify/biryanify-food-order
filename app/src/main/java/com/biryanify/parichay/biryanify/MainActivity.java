@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -25,8 +26,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,54 +43,18 @@ public class MainActivity extends AppCompatActivity {
 
     public static FragmentManager fragmentManager;
 
-    private ArrayList<DailyOrder> dailyOrders;
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    private ArrayList<DailyOrder> ordersList;
     
     private DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference();
     private ValueEventListener ordersRefListener;
 
     private SingletonDateClass instance;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        dailyOrders = new ArrayList<>();
-
-        instance = SingletonDateClass.getInstance();
-
-        dateTextView = (TextView) findViewById(R.id.date_textview);
-        totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
-
-        dateTextView.setText(instance.hrDate);
-        totalOrdersTextView.setText("Loading..");
-
-        logInstanceID();
-
-        reflectChanges();
-
-    }
-
-    private void logInstanceID() {
-        FirebaseInstanceId.getInstance().getInstanceId()
-            .addOnCompleteListener(task -> {
-
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "getInstanceId failed", task.getException());
-                    return;
-                }
-
-                // Get new Instance ID token
-                String token = task.getResult().getToken();
-
-                // Log and toast
-                String msg = getString(R.string.msg_token_fmt, token);
-                Log.d(TAG, msg);
-            }
-        );
-    }
-
     private void reflectChanges() {
+
+        swipeRefreshLayout.setRefreshing(true);
 
         ordersRefListener =
             ordersRef
@@ -94,35 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        fragmentManager = getSupportFragmentManager();
-                        FragmentTransaction fragmentTransaction =
-                                fragmentManager.beginTransaction();
-                        if(dataSnapshot.getValue() != null) {
-                            dailyOrders.clear();
-                            totalOrders = 0;
-                            for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
-                                DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
-                                totalOrders += Long.parseLong(dailyOrder.getQuantity());
-                                dailyOrders.add(dailyOrder);
-                            }
-                            totalOrdersTextView.setText("Total Orders: " + totalOrders);
-                            fragmentTransaction.replace
-                                    (
-                                            R.id.fragment_container2,
-                                            RecyclerViewFragment.newInstance(dailyOrders),
-                                            null
-                                    );
-                            fragmentTransaction.commitAllowingStateLoss();
-                        } else {
-                            totalOrdersTextView.setText("Total Orders: 0" );
-                            fragmentTransaction.replace
-                                    (
-                                            R.id.fragment_container2,
-                                            NoOrderFragment.newInstance(),
-                                            null
-                                    );
-                            fragmentTransaction.commitAllowingStateLoss();
-                        }
+                        update(dataSnapshot);
                     }
 
                     @Override
@@ -132,10 +73,116 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void update(DataSnapshot dataSnapshot) {
+
+        swipeRefreshLayout.setRefreshing(false);
+
+        FragmentTransaction fragmentTransaction =
+                fragmentManager.beginTransaction();
+
+        if(dataSnapshot.getValue() != null) {
+            ordersList.clear();
+            totalOrders = 0;
+
+            for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
+                DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
+                totalOrders += Long.parseLong(dailyOrder.getQuantity());
+                ordersList.add(dailyOrder);
+            }
+
+            totalOrdersTextView.setText("Total Orders: " + totalOrders);
+
+            fragmentTransaction.replace
+                    (
+                            R.id.fragment_container2,
+                            RecyclerViewFragment.newInstance(ordersList),
+                            null
+                    );
+            fragmentTransaction.commitAllowingStateLoss();
+
+        } else {
+
+            totalOrdersTextView.setText("Total Orders: 0" );
+
+            fragmentTransaction.replace
+                    (
+                            R.id.fragment_container2,
+                            NoOrderFragment.newInstance(),
+                            null
+                    );
+            fragmentTransaction.commitAllowingStateLoss();
+        }
+    }
+
+    private void logInstanceID() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(task -> {
+
+                            if (!task.isSuccessful()) {
+                                Log.w(TAG, "getInstanceId failed", task.getException());
+                                return;
+                            }
+
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+
+                            // Log and toast
+                            String msg = getString(R.string.msg_token_fmt, token);
+                            Log.d(TAG, msg);
+                        }
+                );
+    }
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ordersRef.removeEventListener(ordersRefListener);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                        reflectChanges();
+                    });
+
+        ordersList = new ArrayList<>();
+
+        fragmentManager = getSupportFragmentManager();
+
+        instance = SingletonDateClass.getInstance();
+
+        dateTextView = (TextView) findViewById(R.id.date_textview);
+        totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
+
+
+        dateTextView.setText(instance.getHrDate());
+
+        logInstanceID();
+
+        swipeRefreshLayout.post(() -> {
+            swipeRefreshLayout.setRefreshing(true);
+            reflectChanges();
+        });
+    }
+
+
+
+    public void addOrder() {
+        startActivityForResult(FragmentActivity.newInstance(
+                this,
+                "add order"),
+                1
+        );
+    }
+
+    private void writeData(DailyOrder dailyOrder) {
+
+        Map<String, Object> order = dailyOrder.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/orders/"+instance.dbDate+"/"+dailyOrder.getPhone(), order);
+
+        ordersRef.updateChildren(childUpdates);
     }
 
     @Override
@@ -156,34 +203,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void addOrder() {
-        startActivityForResult(FragmentActivity.newInstance(
-                this,
-                "add order"),
-                1
-        );
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
                 DailyOrder dailyOrder = data.getParcelableExtra("order");
-                Toast.makeText(this, "Orded Added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Order Added", Toast.LENGTH_SHORT).show();
                 writeData(dailyOrder);
             }
         }
     }
 
-    private void writeData(DailyOrder dailyOrder) {
-
-        Map<String, Object> order = dailyOrder.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/orders/"+instance.dbDate+"/"+dailyOrder.getPhone(), order);
-
-        ordersRef.updateChildren(childUpdates);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ordersRef.removeEventListener(ordersRefListener);
     }
+
+
 }

@@ -4,6 +4,6 @@
     <item
         android:id="@+id/edit_order_menu"
         android:title="Edit Order"
-        android:icon="@drawable/ic_edit_black_24dp"
-        app:showAsAction="always"/>
+        android:icon="@drawable/ic_edit_white_24dp"
+        app:showAsAction="always" />
 </menu>

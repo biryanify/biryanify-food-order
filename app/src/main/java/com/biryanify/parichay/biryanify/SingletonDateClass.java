@@ -1,5 +1,10 @@
 package com.biryanify.parichay.biryanify;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class SingletonDateClass {
 
         private static SingletonDateClass sSoleInstance;
@@ -22,6 +27,27 @@ public class SingletonDateClass {
             return sSoleInstance;
         }
 
+    public String getHrDate() {
+        if(dbDate != "") {
+            setHumanReadableDate();
+        }
+        return hrDate;
+    }
 
-
+    private void setHumanReadableDate() {
+        SimpleDateFormat dbFormat = new SimpleDateFormat
+                (
+                        "dd-MM-yyyy",
+                        Locale.US
+                );
+        // setting human readable format of date
+        ParsePosition pos = new ParsePosition(0);
+        Date originalDate = dbFormat.parse(dbDate, pos);
+        SimpleDateFormat targetFormat = new SimpleDateFormat
+                (
+                        "EEE, MMM dd, yyyy",
+                        Locale.US
+                );
+        hrDate = targetFormat.format(originalDate);
+    }
 }

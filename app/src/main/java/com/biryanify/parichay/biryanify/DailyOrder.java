@@ -28,7 +28,7 @@ public class DailyOrder implements Parcelable {
         email = "";
         item = "";
         suggestion = "_unknown_";
-        quantity = "";
+        quantity = "0";
         time= "_unknown_";
         address = new HashMap<String, String>();
         address.put("area", "");
@@ -45,7 +45,7 @@ public class DailyOrder implements Parcelable {
     }
 
     public void setItem(String item) {
-        this.item += item;
+        this.item = item;
     }
 
     public void setSuggestion(String suggestion) {
@@ -88,7 +88,7 @@ public class DailyOrder implements Parcelable {
         return address;
     }
 
-    public void setFlat(Map<String, String> address) {
+    public void setAddress(Map<String, String> address) {
         this.address = address;
     }
     public void setFlat(String val) {

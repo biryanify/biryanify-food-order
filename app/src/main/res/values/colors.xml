@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#2f2f2f</color>
     <color name="colorAccent">#5e5e5e</color>
     <color name="noorder_fragment_color">#990000</color>
-    <color name="noorder_text_color">#FFFFFF</color>
-    <color name="vieworder_text_color">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
     <color name="recyclerview_color">#C0C0C0</color>
     <color name="itemorder_fragment_color">#20b2aa</color>
     <color name="date_textview_color">#FFA500</color>
