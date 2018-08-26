@@ -2,6 +2,7 @@ package com.biryanify.parichay.biryanify;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 
@@ -26,15 +27,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentToActivity{
 
     private static final String TAG = "MainActivity";
 
@@ -94,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
             fragmentTransaction.replace
                     (
-                            R.id.fragment_container2,
+                            R.id.fragment_container_main,
                             RecyclerViewFragment.newInstance(ordersList),
                             null
                     );
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
             fragmentTransaction.replace
                     (
-                            R.id.fragment_container2,
+                            R.id.fragment_container_main,
                             NoOrderFragment.newInstance(),
                             null
                     );
@@ -165,26 +162,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
-    public void addOrder() {
-        startActivityForResult(FragmentActivity.newInstance(
-                this,
-                "add order"),
-                1
-        );
-    }
-
-    private void writeData(DailyOrder dailyOrder) {
-
-        Map<String, Object> order = dailyOrder.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/orders/"+instance.dbDate+"/"+dailyOrder.getPhone(), order);
-
-        ordersRef.updateChildren(childUpdates);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -198,9 +175,58 @@ public class MainActivity extends AppCompatActivity {
             case R.id.add_order_menu:
                 addOrder();
                 return true;
+            case android.R.id.home:
+                onBackPressed();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void addOrder() {
+        startActivityForResult(FragmentActivity.newInstance(
+                this,
+                "add order"),
+                1
+        );
+    }
+
+    public void communicate(DailyOrder order) {
+        deleteOrder(order);
+    }
+
+    private void deleteOrder(DailyOrder order) {
+        ordersRef
+                .child("orders")
+                .child(instance.dbDate)
+                .child(order.getPhone()).removeValue();
+        startActivity(getIntent());
+        finish();
+    }
+
+    @Override
+    public void recreate() {
+        super.recreate();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(fragmentManager.getBackStackEntryCount() > 1) {
+            Log.i("MainActivity", "popping backstack");
+            fragmentManager.popBackStack();
+            return;
+        }
+        Log.i("MainActivity", "nothing on backstack, calling super");
+        super.onBackPressed();
+    }
+
+    private void writeData(DailyOrder dailyOrder) {
+
+        Map<String, Object> order = dailyOrder.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/orders/" + instance.dbDate + "/" + dailyOrder.getPhone(), order);
+
+        ordersRef.updateChildren(childUpdates);
     }
 
     @Override
@@ -217,9 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         ordersRef.removeEventListener(ordersRefListener);
+        super.onDestroy();
     }
-
-
 }

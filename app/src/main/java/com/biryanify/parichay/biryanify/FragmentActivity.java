@@ -45,7 +45,7 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
 
         fragmentManager = getSupportFragmentManager();
 
-        if (findViewById(R.id.fragment_container1) != null) {
+        if (findViewById(R.id.fragment_container_modify) != null) {
             if (savedInstanceState != null) {
                 return;
             }
@@ -62,7 +62,7 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
         if (intentStringExtra.equals("add order")) {
             fragmentTransaction.
                     add(
-                            R.id.fragment_container1,
+                            R.id.fragment_container_modify,
                             AddOrderFragment.newInstance(),
                             null
                     );
@@ -70,7 +70,7 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
         } else if(intentStringExtra.equals("edit order")) {
             fragmentTransaction.
                     add(
-                            R.id.fragment_container1,
+                            R.id.fragment_container_modify,
                             EditOrderFragment.newInstance(intent.getParcelableExtra("order")),
                             null
                     );

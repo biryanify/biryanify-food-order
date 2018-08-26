@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -38,11 +39,18 @@ public class NotificationService extends FirebaseMessagingService {
 
         createNotificationChannel();
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent resultIntent = new Intent(this, MainActivity.class);
         SingletonDateClass.getInstance().dbDate = orderDate;
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+
+        // Get the PendingIntent containing the entire back stack
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -55,7 +63,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setWhen(addOrderDate.getTime())
                 .setShowWhen(true)
                 .setSound(alarmSound)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(resultPendingIntent);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());

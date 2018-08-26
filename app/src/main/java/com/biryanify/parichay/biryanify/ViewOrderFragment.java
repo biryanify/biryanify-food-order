@@ -1,9 +1,13 @@
 package com.biryanify.parichay.biryanify;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +24,7 @@ public class ViewOrderFragment extends Fragment{
     private TextView viewOrder;
     private String info;
     DailyOrder order;
+    private FragmentToActivity mCallback;
 
     public ViewOrderFragment() {
         info = "";
@@ -39,6 +44,17 @@ public class ViewOrderFragment extends Fragment{
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
         cal.setTimeInMillis(Long.parseLong(time) * 1000L);
         return cal;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (FragmentToActivity) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement FragmentToActivity");
+        }
     }
 
     @Override
@@ -82,9 +98,39 @@ public class ViewOrderFragment extends Fragment{
             case R.id.edit_order_menu:
                 editOrder();
                 return true;
+            case R.id.delete_order_menu:
+                sendOrder(order);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDetach() {
+        mCallback = null;
+        super.onDetach();
+    }
+
+    private void sendOrder(DailyOrder order) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        mCallback.communicate(order);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Log.i("MainActivity", "You said no to delete");
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Do you want to delete order?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
     }
 
     private void editOrder() {
@@ -99,7 +145,7 @@ public class ViewOrderFragment extends Fragment{
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.add_order_menu).setVisible(false);
         super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.add_order_menu).setVisible(false);
     }
 }

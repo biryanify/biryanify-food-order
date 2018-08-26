@@ -35,7 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/date_textview" />
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/fragment_container2"
+        android:id="@+id/fragment_container_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="64dp"
@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="parent"></FrameLayout>
 
 
-</android.support.constraint.ConstraintLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
 
 
