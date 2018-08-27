@@ -164,10 +164,12 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         sharedPreferences = getSharedPreferences(datePref, Context.MODE_PRIVATE);
 
         instance = SingletonDateClass.getInstance();
-        if(SENDER_ID.equals("Notification Service")) {
-            instance.dbDate = sharedPreferences.getString(dbDateKey, "01-07-2018");
-        }
 
+        if(SENDER_ID != null){
+            if(SENDER_ID.equals("Notification Service")) {
+                instance.dbDate = sharedPreferences.getString(dbDateKey, "01-07-2018");
+            }
+        }
         dateTextView = (TextView) findViewById(R.id.date_textview);
         totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
 
