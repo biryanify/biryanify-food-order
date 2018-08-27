@@ -29,8 +29,6 @@ public class IndexActivity extends AppCompatActivity {
 
         SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
-        editText = findViewById(R.id.getDate);
-
         editText.setOnClickListener(v -> datePickerDialog.show());
 
         Calendar todayDate = Calendar.getInstance();
@@ -61,12 +59,13 @@ public class IndexActivity extends AppCompatActivity {
         instance = SingletonDateClass.getInstance();
 
         setContentView(R.layout.activity_index);
+        editText = findViewById(R.id.getDate);
 
         setDate();
 
         mButton = findViewById(R.id.button_check);
         mButton.setOnClickListener(v -> {
-                if(instance.dbDate.length() != 0) {
+                if(editText.getText().toString().length() != 0) {
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
                     intent.putExtra("SENDER_KEY", "index activity");
                     startActivity(intent);
@@ -81,8 +80,6 @@ public class IndexActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        instance.dbDate = "";
-        instance.hrDate = "";
         editText.setText("");
     }
 }

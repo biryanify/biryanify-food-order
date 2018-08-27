@@ -2,7 +2,6 @@ package com.biryanify.parichay.biryanify;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements FragmentToActivity{
+public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
     private static final String TAG = "MainActivity";
 
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements FragmentToActivit
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Toast.makeText(MainActivity.this, "Data Changed", Toast.LENGTH_SHORT);
                         update(dataSnapshot);
                     }
 
@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity implements FragmentToActivit
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
                         Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
-                        reflectChanges();
+                        startActivity(getIntent());
+                        finish();
                     });
 
         ordersList = new ArrayList<>();
@@ -182,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements FragmentToActivit
         }
     }
 
-    public void addOrder() {
+    private void addOrder() {
         startActivityForResult(FragmentActivity.newInstance(
                 this,
                 "add order"),
@@ -190,17 +191,20 @@ public class MainActivity extends AppCompatActivity implements FragmentToActivit
         );
     }
 
-    public void communicate(DailyOrder order) {
-        deleteOrder(order);
-    }
-
-    private void deleteOrder(DailyOrder order) {
+    public void deleteOrder(DailyOrder order) {
         ordersRef
                 .child("orders")
                 .child(instance.dbDate)
                 .child(order.getPhone()).removeValue();
         startActivity(getIntent());
         finish();
+    }
+
+    public void deleteOrder(DailyOrder order, Boolean refresh) {
+        ordersRef
+                .child("orders")
+                .child(instance.dbDate)
+                .child(order.getPhone()).removeValue();
     }
 
     @Override
@@ -219,12 +223,13 @@ public class MainActivity extends AppCompatActivity implements FragmentToActivit
         super.onBackPressed();
     }
 
-    private void writeData(DailyOrder dailyOrder) {
+    private void modifyOrder(DailyOrder dailyOrder, String date) {
+        deleteOrder(dailyOrder, false);
 
         Map<String, Object> order = dailyOrder.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/orders/" + instance.dbDate + "/" + dailyOrder.getPhone(), order);
+        childUpdates.put("/orders/" + date + "/" + dailyOrder.getPhone(), order);
 
         ordersRef.updateChildren(childUpdates);
     }
@@ -235,8 +240,9 @@ public class MainActivity extends AppCompatActivity implements FragmentToActivit
         if(requestCode == 1) {
             if(resultCode == Activity.RESULT_OK) {
                 DailyOrder dailyOrder = data.getParcelableExtra("order");
+                String date = data.getStringExtra("date");
                 Toast.makeText(this, "Order Added", Toast.LENGTH_SHORT).show();
-                writeData(dailyOrder);
+                modifyOrder(dailyOrder, date);
             }
         }
     }

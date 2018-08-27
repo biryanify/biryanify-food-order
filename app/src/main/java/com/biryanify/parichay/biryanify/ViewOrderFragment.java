@@ -2,7 +2,6 @@ package com.biryanify.parichay.biryanify;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +23,7 @@ public class ViewOrderFragment extends Fragment{
     private TextView viewOrder;
     private String info;
     DailyOrder order;
-    private FragmentToActivity mCallback;
+    private onDeleteOrder mCallback;
 
     public ViewOrderFragment() {
         info = "";
@@ -50,7 +49,7 @@ public class ViewOrderFragment extends Fragment{
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mCallback = (FragmentToActivity) context;
+            mCallback = (onDeleteOrder) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
                     + " must implement FragmentToActivity");
@@ -118,7 +117,7 @@ public class ViewOrderFragment extends Fragment{
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        mCallback.communicate(order);
+                        mCallback.deleteOrder(order);
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         Log.i("MainActivity", "You said no to delete");

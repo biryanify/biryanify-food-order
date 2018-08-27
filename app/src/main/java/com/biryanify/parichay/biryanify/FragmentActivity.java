@@ -7,11 +7,12 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.TextView;
 
-public class FragmentActivity extends AppCompatActivity implements FragmentToActivity {
+public class FragmentActivity extends AppCompatActivity implements onModifyOrder {
     private TextView dateTextView;
 
 
@@ -27,9 +28,11 @@ public class FragmentActivity extends AppCompatActivity implements FragmentToAct
         return intent;
     }
 
-    public void communicate(DailyOrder dailyOrder) {
+    public void modifyOrder(DailyOrder dailyOrder, String dbDate) {
+//        Log.d("FragmentActivity", "Got this date "+dbDate);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("order", (Parcelable) dailyOrder);
+        returnIntent.putExtra("date", dbDate);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

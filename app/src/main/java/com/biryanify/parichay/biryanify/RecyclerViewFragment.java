@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -53,24 +54,8 @@ public class RecyclerViewFragment extends Fragment{
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        OrderAdapter adapter = new OrderAdapter(dailyOrders);
-        mRecyclerView.setAdapter(adapter);
-
-        mRecyclerView.addOnItemTouchListener(new MyTouchListener(getContext(), mRecyclerView,
-                new MyTouchListener.OnTouchActionListener() {
-                    @Override
-                    public void onLeftSwipe(View view, int position) {
-
-                    }
-
-                    @Override
-                    public void onRightSwipe(View view, int position) {
-
-                    }
-
-                    @Override
-                    public void onClick(View view, int position) {
-                        MainActivity.fragmentManager.beginTransaction()
+        RecyclerViewListener listener = (v, position) -> {
+            MainActivity.fragmentManager.beginTransaction()
                             .replace
                                 (
                                     R.id.fragment_container_main,
@@ -79,8 +64,11 @@ public class RecyclerViewFragment extends Fragment{
                                 )
                                 .addToBackStack(null)
                                 .commit();
-                    }
-                }));
+        };
+
+        OrderAdapter adapter = new OrderAdapter(dailyOrders, listener);
+
+        mRecyclerView.setAdapter(adapter);
 
         return view;
     }
