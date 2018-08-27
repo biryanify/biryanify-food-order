@@ -31,6 +31,7 @@ public class FragmentActivity extends AppCompatActivity implements onModifyOrder
         Intent returnIntent = new Intent();
         returnIntent.putExtra("order", (Parcelable) dailyOrder);
         returnIntent.putExtra("date", dbDate);
+        returnIntent.putExtra("SENDER_KEY", "Fragment Activity");
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
