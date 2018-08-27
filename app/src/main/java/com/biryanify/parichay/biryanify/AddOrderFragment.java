@@ -78,6 +78,8 @@ public class AddOrderFragment extends Fragment {
         SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
         EditText dateEditText = view.findViewById(R.id.date_editText);
+        dateEditText.setText(SingletonDateClass.getInstance().dbDate);
+        dateEditText.setSelection(dateEditText.getText().length());
 
         dateEditText.setOnClickListener(v -> datePickerDialog.show());
 

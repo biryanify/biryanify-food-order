@@ -13,8 +13,6 @@ import android.view.MenuInflater;
 import android.widget.TextView;
 
 public class FragmentActivity extends AppCompatActivity implements onModifyOrder {
-    private TextView dateTextView;
-
 
     public static Intent newInstance(Activity from, String orderCommand) {
         Intent intent = new Intent(from, FragmentActivity.class);
@@ -37,8 +35,6 @@ public class FragmentActivity extends AppCompatActivity implements onModifyOrder
         finish();
     }
 
-
-
     public static FragmentManager fragmentManager;
 
     @Override
@@ -54,7 +50,7 @@ public class FragmentActivity extends AppCompatActivity implements onModifyOrder
             }
         }
 
-        dateTextView = findViewById(R.id.date_textview);
+        TextView dateTextView = findViewById(R.id.date_textview);
 
         Intent intent = getIntent();
         String intentStringExtra = intent.getStringExtra("extra");

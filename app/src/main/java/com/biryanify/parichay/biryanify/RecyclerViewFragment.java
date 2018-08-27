@@ -62,7 +62,7 @@ public class RecyclerViewFragment extends Fragment{
                                     ViewOrderFragment.newInstance(dailyOrders.get(position)),
                                     null
                                 )
-                                .addToBackStack(null)
+                                .addToBackStack("RecyclerFragment")
                                 .commit();
         };
 

@@ -1,7 +1,9 @@
 package com.biryanify.parichay.biryanify;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 
@@ -34,6 +36,12 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
     private static final String TAG = "MainActivity";
 
+    private static int changecount;
+
+    SharedPreferences sharedPreferences;
+    public static final String datePref = "datePref";
+    public static final String dbDateKey = "dbDateKey";
+
     private long totalOrders;
     TextView dateTextView, totalOrdersTextView;
 
@@ -59,7 +67,8 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Toast.makeText(MainActivity.this, "Data Changed", Toast.LENGTH_SHORT);
+                        changecount += 1;
+                        Toast.makeText(MainActivity.this, "Data Changed: "+ changecount, Toast.LENGTH_SHORT).show();
                         update(dataSnapshot);
                     }
 
@@ -72,14 +81,12 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
     private void update(DataSnapshot dataSnapshot) {
 
-        swipeRefreshLayout.setRefreshing(false);
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        FragmentTransaction fragmentTransaction =
-                fragmentManager.beginTransaction();
+        ordersList.clear();
+        totalOrders = 0;
 
-        if(dataSnapshot.getValue() != null) {
-            ordersList.clear();
-            totalOrders = 0;
+        if(dataSnapshot.getValue() != null && dataSnapshot.getKey().equals(instance.dbDate)) {
 
             for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
                 DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
@@ -93,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                     (
                             R.id.fragment_container_main,
                             RecyclerViewFragment.newInstance(ordersList),
-                            null
+                            "RecyclerFragment"
                     );
             fragmentTransaction.commitAllowingStateLoss();
 
@@ -105,10 +112,12 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                     (
                             R.id.fragment_container_main,
                             NoOrderFragment.newInstance(),
-                            null
+                            "NoOrderFragment"
                     );
             fragmentTransaction.commitAllowingStateLoss();
         }
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void logInstanceID() {
@@ -135,6 +144,11 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        changecount = 0;
+
+        Intent sender = getIntent();
+        String SENDER_ID = sender.getStringExtra("SENDER_KEY");
+
         swipeRefreshLayout = findViewById(R.id.swiperefresh);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
@@ -147,11 +161,15 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
         fragmentManager = getSupportFragmentManager();
 
+        sharedPreferences = getSharedPreferences(datePref, Context.MODE_PRIVATE);
+
         instance = SingletonDateClass.getInstance();
+        if(SENDER_ID.equals("Notification Service")) {
+            instance.dbDate = sharedPreferences.getString(dbDateKey, "01-07-2018");
+        }
 
         dateTextView = (TextView) findViewById(R.id.date_textview);
         totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
-
 
         dateTextView.setText(instance.getHrDate());
 
@@ -232,6 +250,9 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         childUpdates.put("/orders/" + date + "/" + dailyOrder.getPhone(), order);
 
         ordersRef.updateChildren(childUpdates);
+
+        startActivity(getIntent());
+        finish();
     }
 
     @Override
@@ -241,7 +262,6 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
             if(resultCode == Activity.RESULT_OK) {
                 DailyOrder dailyOrder = data.getParcelableExtra("order");
                 String date = data.getStringExtra("date");
-                Toast.makeText(this, "Order Added", Toast.LENGTH_SHORT).show();
                 modifyOrder(dailyOrder, date);
             }
         }

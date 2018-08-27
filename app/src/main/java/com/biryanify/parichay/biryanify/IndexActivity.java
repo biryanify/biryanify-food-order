@@ -1,7 +1,9 @@
 package com.biryanify.parichay.biryanify;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -20,8 +22,10 @@ import java.util.Locale;
 public class IndexActivity extends AppCompatActivity {
 
     private TextView editText;
-    private Button mButton;
     private DatePickerDialog datePickerDialog;
+//    SharedPreferences sharedPreferences;
+//    public static final String datePref = "datePref";
+//    public static final String dbDateKey = "dbDateKey";
 
     private SingletonDateClass instance;
 
@@ -39,7 +43,9 @@ public class IndexActivity extends AppCompatActivity {
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
                     instance.dbDate = dbFormat.format(newDate.getTime());
-
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.putString(dbDateKey, dbFormat.format(newDate.getTime()));
+//                    editor.apply();
                     editText.setText(instance.dbDate);
                 };
 
@@ -56,6 +62,8 @@ public class IndexActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        sharedPreferences = getSharedPreferences(datePref, Context.MODE_PRIVATE);
+
         instance = SingletonDateClass.getInstance();
 
         setContentView(R.layout.activity_index);
@@ -63,11 +71,11 @@ public class IndexActivity extends AppCompatActivity {
 
         setDate();
 
-        mButton = findViewById(R.id.button_check);
+        Button mButton = findViewById(R.id.button_check);
         mButton.setOnClickListener(v -> {
                 if(editText.getText().toString().length() != 0) {
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
-                    intent.putExtra("SENDER_KEY", "index activity");
+                    intent.putExtra("SENDER_KEY", "Index Activity");
                     startActivity(intent);
                 } else {
                     Toast.makeText(IndexActivity.this, "Choose a date", Toast.LENGTH_SHORT).show();

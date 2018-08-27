@@ -77,6 +77,27 @@ public class EditOrderFragment extends Fragment{
         setField(view, R.id.address_edittext,
                 order.getAddress().get("flat") +
                         ", " + order.getAddress().get("area"));
+        setField(view, R.id.date_editText, SingletonDateClass.getInstance().dbDate);
+    }
+
+
+    private void setField(View view, int eID, String defaultText) {
+        EditText editText = view.findViewById(eID);
+        if(eID == R.id.phone_editText) {
+            editText.setEnabled(false);
+        } else if(eID == R.id.date_editText) {
+            editText.setSelection(editText.getText().length());
+        }
+        editText.setText(defaultText);
+    }
+
+    private void editOrder(View view, DailyOrder order) {
+        // will not be able to edit phone number because it is unique id in db
+        reflect(view, R.id.name_edittext, order::setName);
+        reflect(view, R.id.email_edittext, order::setEmail);
+        reflect(view, R.id.item_edittext, order::setItem);
+        reflect(view, R.id.quantity_edittext, order::setQuantity);
+        reflect(view, R.id.address_edittext, order::setFlat);
     }
 
     private void setDate(View view) {
@@ -106,24 +127,6 @@ public class EditOrderFragment extends Fragment{
                 todayDate.get(Calendar.DAY_OF_MONTH)
         );
         Log.d("FragmentActivity", "Got this date "+dateEditText.getText().toString());
-    }
-
-
-    private void setField(View view, int eID, String defaultText) {
-        EditText editText = view.findViewById(eID);
-        if(eID == R.id.phone_editText) {
-            editText.setEnabled(false);
-        }
-        editText.setText(defaultText);
-    }
-
-    private void editOrder(View view, DailyOrder order) {
-        // will not be able to edit phone number because it is unique id in db
-        reflect(view, R.id.name_edittext, order::setName);
-        reflect(view, R.id.email_edittext, order::setEmail);
-        reflect(view, R.id.item_edittext, order::setItem);
-        reflect(view, R.id.quantity_edittext, order::setQuantity);
-        reflect(view, R.id.address_edittext, order::setFlat);
     }
 
     @Nullable
