@@ -23,15 +23,13 @@ public class IndexActivity extends AppCompatActivity {
 
     private TextView editText;
     private DatePickerDialog datePickerDialog;
-//    SharedPreferences sharedPreferences;
-//    public static final String datePref = "datePref";
-//    public static final String dbDateKey = "dbDateKey";
 
     private SingletonDateClass instance;
 
     private void setDate() {
 
-        SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        SimpleDateFormat basicFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
         editText.setOnClickListener(v -> datePickerDialog.show());
 
@@ -39,14 +37,10 @@ public class IndexActivity extends AppCompatActivity {
 
         DatePickerDialog.OnDateSetListener listener =
                 (DatePicker view, int year, int monthOfYear, int dayOfMonth) -> {
-
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
                     instance.dbDate = dbFormat.format(newDate.getTime());
-//                    SharedPreferences.Editor editor = sharedPreferences.edit();
-//                    editor.putString(dbDateKey, dbFormat.format(newDate.getTime()));
-//                    editor.apply();
-                    editText.setText(instance.dbDate);
+                    editText.setText(basicFormat.format(newDate.getTime()));
                 };
 
         datePickerDialog = new DatePickerDialog(
@@ -61,8 +55,6 @@ public class IndexActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        sharedPreferences = getSharedPreferences(datePref, Context.MODE_PRIVATE);
 
         instance = SingletonDateClass.getInstance();
 

@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
     private void setDate() {
 
-        SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
 
         dateTextView = (TextView) findViewById(R.id.date_textview);
         dateTextView.setText(instance.getHrDate());

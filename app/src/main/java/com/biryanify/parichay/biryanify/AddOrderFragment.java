@@ -76,15 +76,17 @@ public class AddOrderFragment extends Fragment {
     private void setField(View view, int eID, String defaultText) {
         EditText editText = view.findViewById(eID);
         editText.setText(defaultText);
-        mDbDate = defaultText;
         editText.setSelection(editText.getText().length());
     }
 
-    private void getDate(View view) {
+    private void getDate(View view, int eID) {
 
-        SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        SimpleDateFormat basicFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
-        EditText dateEditText = view.findViewById(R.id.date_editText);
+        mDbDate = SingletonDateClass.getInstance().dbDate;
+
+        EditText dateEditText = view.findViewById(eID);
 
         dateEditText.setOnClickListener(v -> datePickerDialog.show());
 
@@ -95,7 +97,7 @@ public class AddOrderFragment extends Fragment {
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
                     mDbDate = dbFormat.format(newDate.getTime());
-                    dateEditText.setText(mDbDate);
+                    dateEditText.setText(basicFormat.format(newDate.getTime()));
                 };
 
         datePickerDialog = new DatePickerDialog(
@@ -115,9 +117,9 @@ public class AddOrderFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        setField(view, R.id.date_editText, SingletonDateClass.getInstance().dbDate);
+        setField(view, R.id.date_editText, SingletonDateClass.getInstance().getBasicDate());
 
-        getDate(view);
+        getDate(view, R.id.date_editText);
 
         mOrder = new DailyOrder();
 

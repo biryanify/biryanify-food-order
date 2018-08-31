@@ -78,7 +78,7 @@ public class EditOrderFragment extends Fragment{
         setField(view, R.id.address_edittext,
                 order.getAddress().get("flat") +
                         ", " + order.getAddress().get("area"));
-        setField(view, R.id.date_editText, SingletonDateClass.getInstance().dbDate);
+        setField(view, R.id.date_editText, SingletonDateClass.getInstance().getBasicDate());
     }
 
 
@@ -88,7 +88,6 @@ public class EditOrderFragment extends Fragment{
         if(eID == R.id.phone_editText) {
             editText.setEnabled(false);
         } else if(eID == R.id.date_editText) {
-            mDbDate = defaultText;
             editText.setSelection(editText.getText().length());
         }
     }
@@ -102,11 +101,13 @@ public class EditOrderFragment extends Fragment{
         reflect(view, R.id.address_edittext, order::setFlat);
     }
 
-    private void getDate(View view) {
+    private void getDate(View view, int eID) {
 
-        SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        SimpleDateFormat basicFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
-        EditText dateEditText = view.findViewById(R.id.date_editText);
+        EditText dateEditText = view.findViewById(eID);
+        mDbDate = SingletonDateClass.getInstance().dbDate;
 
         dateEditText.setOnClickListener(v -> datePickerDialog.show());
 
@@ -118,7 +119,7 @@ public class EditOrderFragment extends Fragment{
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
                     mDbDate = dbFormat.format(newDate.getTime());
-                    dateEditText.setText(mDbDate);
+                    dateEditText.setText(basicFormat.format(newDate.getTime()));
                 };
 
         datePickerDialog = new DatePickerDialog(
@@ -138,7 +139,7 @@ public class EditOrderFragment extends Fragment{
 
         setHasOptionsMenu(true);
 
-        getDate(view);
+        getDate(view, R.id.date_editText);
 
         Bundle bundle = getArguments();
         mOrder = (DailyOrder) bundle.getParcelable("order");

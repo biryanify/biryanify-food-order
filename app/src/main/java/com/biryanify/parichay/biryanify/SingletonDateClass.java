@@ -8,7 +8,7 @@ import java.util.Locale;
 public class SingletonDateClass {
 
         private static SingletonDateClass sSoleInstance;
-        public String hrDate = "", dbDate = "";
+        public String hrDate = "", dbDate = "", basicDate = "";
 
         //private constructor.
         private SingletonDateClass(){
@@ -34,10 +34,34 @@ public class SingletonDateClass {
         return hrDate;
     }
 
+    public String getBasicDate() {
+        if(dbDate != "") {
+            setBasicDate();
+        }
+        return basicDate;
+    }
+
+    private void setBasicDate() {
+        SimpleDateFormat dbFormat = new SimpleDateFormat
+                (
+                        "yyyyMMdd",
+                        Locale.US
+                );
+        // setting human readable format of date
+        ParsePosition pos = new ParsePosition(0);
+        Date originalDate = dbFormat.parse(dbDate, pos);
+        SimpleDateFormat targetFormat = new SimpleDateFormat
+                (
+                        "dd/MM/yyyy",
+                        Locale.US
+                );
+        basicDate = targetFormat.format(originalDate);
+    }
+
     private void setHumanReadableDate() {
         SimpleDateFormat dbFormat = new SimpleDateFormat
                 (
-                        "dd-MM-yyyy",
+                        "yyyyMMdd",
                         Locale.US
                 );
         // setting human readable format of date
