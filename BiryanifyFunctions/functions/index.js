@@ -1,6 +1,5 @@
 'use strict';
 const functions = require('firebase-functions');
-const moment = require('moment');
 const admin = require('firebase-admin');
 admin.initializeApp(
   {
@@ -36,7 +35,7 @@ exports.sendNewOrderNotification =
     ['eJ1R4N9pTFI:APA91bHdcX3qrLXgwOLNT2jnkTICDbCYS8nSYHMM6IMA0BG4FUPSIXFq3zV9t30LQElAq_B_TnKx5UPijSE2T5ZWFeBwlknz0TDYdRa1Jor4yZ-KZBTxOP9BXUHKNngJZB6OP-uZh5Mp_oYtwcqNkf5eSR5F_BtU9Q']
 
     return admin.database().ref('orders/' + date + '/' + phone).child('time')
-          .set(String(moment().unix()))
+          .set(admin.database.ServerValue.TIMESTAMP)
           .then(e => {return admin.database()
           .ref(`/orders/${date}/${phone}`)
           .once('value')})
@@ -46,7 +45,7 @@ exports.sendNewOrderNotification =
                 "title": 'New order placed!',
                 "body": `${snapshot.val().name} has ordered ${snapshot.val().quantity} plates`,
                 "orderDate": (String(date)),
-                "serverTimeStamp": moment().utcOffset("+05:30").format('dddd, MMMM Do YYYY, h:mm:ss a')
+                "serverTimeStamp": `${snapshot.val().time}`
               }
             };
             return admin.messaging().sendToDevice(token, payload);

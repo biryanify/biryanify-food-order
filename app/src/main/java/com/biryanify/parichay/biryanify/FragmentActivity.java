@@ -27,7 +27,7 @@ public class FragmentActivity extends AppCompatActivity implements onModifyOrder
     }
 
     public void modifyOrder(DailyOrder dailyOrder, String dbDate) {
-//        Log.d("FragmentActivity", "Got this date "+dbDate);
+//        Log.d("FragmentActivity", "Got this date "+mDbDate);
         Intent returnIntent = new Intent();
         returnIntent.putExtra("order", (Parcelable) dailyOrder);
         returnIntent.putExtra("date", dbDate);

@@ -33,11 +33,7 @@ public class NotificationService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        SimpleDateFormat originalFormat = new SimpleDateFormat("EEEE, MMMMM d'th' yyyy, h:mm:ss a");
-        ParsePosition pos = new ParsePosition(0);
-        Date addOrderDate = originalFormat.parse(remoteMessage.getData().get("serverTimeStamp"), pos);
-//        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm:ss");
-//        String timeDate = timeFormat.format(addOrderDate);
+        long addOrderDate = Long.parseLong(remoteMessage.getData().get("serverTimeStamp"));
 
         createNotificationChannel();
 
@@ -65,7 +61,7 @@ public class NotificationService extends FirebaseMessagingService {
                 .setContentText(remoteMessage.getData().get("body"))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
-                .setWhen(addOrderDate.getTime())
+                .setWhen(addOrderDate)
                 .setShowWhen(true)
                 .setSound(alarmSound)
                 .setContentIntent(resultPendingIntent);

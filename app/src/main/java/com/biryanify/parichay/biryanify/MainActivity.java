@@ -1,6 +1,7 @@
 package com.biryanify.parichay.biryanify;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 import android.view.MenuItem;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,22 +30,24 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
     private static final String TAG = "MainActivity";
 
-    private static int changecount;
-
     SharedPreferences sharedPreferences;
     public static final String datePref = "datePref";
     public static final String dbDateKey = "dbDateKey";
 
-    private long totalOrders;
     TextView dateTextView, totalOrdersTextView;
+
+    private DatePickerDialog datePickerDialog;
 
     public static FragmentManager fragmentManager;
 
@@ -67,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        changecount += 1;
-                        Toast.makeText(MainActivity.this, "Data Changed: "+ changecount, Toast.LENGTH_SHORT).show();
                         update(dataSnapshot);
                     }
 
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         ordersList.clear();
-        totalOrders = 0;
+        long totalOrders = 0;
 
         if(dataSnapshot.getValue() != null && dataSnapshot.getKey().equals(instance.dbDate)) {
 
@@ -104,10 +106,8 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                     );
             fragmentTransaction.commitAllowingStateLoss();
 
-        } else {
-
-            totalOrdersTextView.setText("Total Orders: 0" );
-
+        } else if(dataSnapshot.getValue() == null){
+            totalOrdersTextView.setText("Total Orders: 0");
             fragmentTransaction.replace
                     (
                             R.id.fragment_container_main,
@@ -139,12 +139,41 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                 );
     }
 
+    private void setDate() {
+
+        SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
+
+        dateTextView = (TextView) findViewById(R.id.date_textview);
+        dateTextView.setText(instance.getHrDate());
+
+        dateTextView.setOnClickListener(v -> datePickerDialog.show());
+
+        Calendar todayDate = Calendar.getInstance();
+
+        DatePickerDialog.OnDateSetListener listener =
+                (DatePicker view, int year, int monthOfYear, int dayOfMonth) -> {
+                    Calendar newDate = Calendar.getInstance();
+                    newDate.set(year, monthOfYear, dayOfMonth);
+                    instance.dbDate = dbFormat.format(newDate.getTime());
+                    Intent recursiveIntent = new Intent(view.getContext(), MainActivity.class);
+                    recursiveIntent.putExtra("SENDER_KEY", "MainActivity");
+                    startActivity(recursiveIntent);
+                    finish();
+                };
+
+        datePickerDialog = new DatePickerDialog(
+                this,
+                listener,
+                todayDate.get(Calendar.YEAR),
+                todayDate.get(Calendar.MONTH),
+                todayDate.get(Calendar.DAY_OF_MONTH)
+        );
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        changecount = 0;
 
         Intent sender = getIntent();
         String SENDER_ID = sender.getStringExtra("SENDER_KEY");
@@ -170,10 +199,11 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                 instance.dbDate = sharedPreferences.getString(dbDateKey, "01-07-2018");
             }
         }
-        dateTextView = (TextView) findViewById(R.id.date_textview);
-        totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
 
-        dateTextView.setText(instance.getHrDate());
+        setDate();
+
+        totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
+        totalOrdersTextView.setText("Loading..");
 
         logInstanceID();
 
@@ -234,13 +264,13 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
     @Override
     public void onBackPressed() {
-        if(fragmentManager.getBackStackEntryCount() > 1) {
+        if(fragmentManager.getBackStackEntryCount() > 0) {
             Log.i("MainActivity", "popping backstack");
             fragmentManager.popBackStack();
             return;
         }
         Log.i("MainActivity", "nothing on backstack, calling super");
-        super.onBackPressed();
+        finish();
     }
 
     private void modifyOrder(DailyOrder dailyOrder, String date) {

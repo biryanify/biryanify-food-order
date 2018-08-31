@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,18 +23,18 @@ import java.util.Locale;
 
 public class EditOrderFragment extends Fragment{
 
-    private DailyOrder order;
-    public String dbDate;
     private onModifyOrder mCallback;
+    private DailyOrder mOrder;
+    public String mDbDate;
     private DatePickerDialog datePickerDialog;
 
     public EditOrderFragment() {
     }
 
-    public static EditOrderFragment newInstance(DailyOrder dailyOrder) {
+    public static EditOrderFragment newInstance(DailyOrder order) {
         EditOrderFragment editOrderFragment = new EditOrderFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelable("order", dailyOrder);
+        bundle.putParcelable("order", order);
         editOrderFragment.setArguments(bundle);
         return editOrderFragment;
     }
@@ -83,12 +84,13 @@ public class EditOrderFragment extends Fragment{
 
     private void setField(View view, int eID, String defaultText) {
         EditText editText = view.findViewById(eID);
+        editText.setText(defaultText);
         if(eID == R.id.phone_editText) {
             editText.setEnabled(false);
         } else if(eID == R.id.date_editText) {
+            mDbDate = defaultText;
             editText.setSelection(editText.getText().length());
         }
-        editText.setText(defaultText);
     }
 
     private void editOrder(View view, DailyOrder order) {
@@ -100,7 +102,7 @@ public class EditOrderFragment extends Fragment{
         reflect(view, R.id.address_edittext, order::setFlat);
     }
 
-    private void setDate(View view) {
+    private void getDate(View view) {
 
         SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
@@ -115,8 +117,8 @@ public class EditOrderFragment extends Fragment{
 
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
-                    dbDate = dbFormat.format(newDate.getTime());
-                    dateEditText.setText(dbDate);
+                    mDbDate = dbFormat.format(newDate.getTime());
+                    dateEditText.setText(mDbDate);
                 };
 
         datePickerDialog = new DatePickerDialog(
@@ -126,7 +128,7 @@ public class EditOrderFragment extends Fragment{
                 todayDate.get(Calendar.MONTH),
                 todayDate.get(Calendar.DAY_OF_MONTH)
         );
-        Log.d("FragmentActivity", "Got this date "+dateEditText.getText().toString());
+        Log.d("FragmentActivity", "Got this date "+ mDbDate);
     }
 
     @Nullable
@@ -136,14 +138,15 @@ public class EditOrderFragment extends Fragment{
 
         setHasOptionsMenu(true);
 
-        setDate(view);
+        getDate(view);
 
         Bundle bundle = getArguments();
-        order = (DailyOrder) bundle.getParcelable("order");
+        mOrder = (DailyOrder) bundle.getParcelable("order");
 
-        buildFields(view, order);
-
-        editOrder(view, order);
+        if(mOrder != null) {
+            buildFields(view, mOrder);
+            editOrder(view, mOrder);
+        }
 
         return view;
     }
@@ -155,13 +158,14 @@ public class EditOrderFragment extends Fragment{
     }
 
     private void sendOrder() {
-        mCallback.modifyOrder(order, dbDate);
+        mCallback.modifyOrder(mOrder, mDbDate);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_order_menu:
+                Toast.makeText(getContext(), "Saved to: "+ mDbDate, Toast.LENGTH_SHORT).show();
                 sendOrder();
                 return true;
             default:

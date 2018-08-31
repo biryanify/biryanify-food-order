@@ -18,7 +18,7 @@ public class DailyOrder implements Parcelable {
     private String method;
     private String suggestion;
     private String quantity;
-    private String time;
+    private long time;
     private Map<String , String> address;
 
 
@@ -29,7 +29,7 @@ public class DailyOrder implements Parcelable {
         item = "";
         suggestion = "_unknown_";
         quantity = "0";
-        time= "_unknown_";
+        time = 0;
         address = new HashMap<String, String>();
         address.put("area", "");
         address.put("flat", "");
@@ -103,7 +103,7 @@ public class DailyOrder implements Parcelable {
         method = in.readString();
         suggestion = in.readString();
         quantity = in.readString();
-        time = in.readString();
+        time = in.readLong();
         int size = in.readInt();
         address = new HashMap<String, String>();
         for(int i = 0; i < size; i++) {
@@ -127,7 +127,7 @@ public class DailyOrder implements Parcelable {
         dest.writeString(method);
         dest.writeString(suggestion);
         dest.writeString(quantity);
-        dest.writeString(time);
+        dest.writeLong(time);
         dest.writeInt(address.size());
         for(Map.Entry<String, String > entry : address.entrySet()) {
             dest.writeString(entry.getKey());
@@ -163,11 +163,11 @@ public class DailyOrder implements Parcelable {
     }
 
 
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(long time) {
         this.time = time;
     }
 }

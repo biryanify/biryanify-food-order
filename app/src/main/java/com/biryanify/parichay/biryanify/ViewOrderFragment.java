@@ -39,9 +39,9 @@ public class ViewOrderFragment extends Fragment{
         return viewOrderFragment;
     }
 
-    private Calendar getCal(String time) {
+    private Calendar getCal(long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        cal.setTimeInMillis(Long.parseLong(time) * 1000L);
+        cal.setTimeInMillis(time);
         return cal;
     }
 
@@ -76,7 +76,7 @@ public class ViewOrderFragment extends Fragment{
                 "\n\nAddress: "+order.getAddress().get("flat") +", "+order.getAddress().get("area")+
                 "\n\nSuggestion: "+order.getSuggestion();
 
-        if(!order.getTime().equals("_unknown_")) {
+        if(order.getTime() != 0) {
             String date = DateFormat.format("EEE, dd/MM/yyyy, hh:mm aaa", getCal(order.getTime())).toString();
             info += "\n\nOrder placed on: " + date;
         }

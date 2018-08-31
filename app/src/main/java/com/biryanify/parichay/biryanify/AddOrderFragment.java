@@ -23,8 +23,8 @@ import java.util.Locale;
 public class AddOrderFragment extends Fragment {
 
     private onModifyOrder mCallback;
-    private DailyOrder order;
-    public String dbDate;
+    private DailyOrder mOrder;
+    public String mDbDate;
     private DatePickerDialog datePickerDialog;
 
     public AddOrderFragment() {
@@ -73,26 +73,29 @@ public class AddOrderFragment extends Fragment {
         reflect(view, R.id.address_edittext, order::setFlat);
     }
 
-    private void setDate(View view) {
+    private void setField(View view, int eID, String defaultText) {
+        EditText editText = view.findViewById(eID);
+        editText.setText(defaultText);
+        mDbDate = defaultText;
+        editText.setSelection(editText.getText().length());
+    }
+
+    private void getDate(View view) {
 
         SimpleDateFormat dbFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.US);
 
         EditText dateEditText = view.findViewById(R.id.date_editText);
-        dateEditText.setText(SingletonDateClass.getInstance().dbDate);
-        dateEditText.setSelection(dateEditText.getText().length());
 
         dateEditText.setOnClickListener(v -> datePickerDialog.show());
 
         Calendar todayDate = Calendar.getInstance();
 
-
         DatePickerDialog.OnDateSetListener listener =
                 (DatePicker v, int year, int monthOfYear, int dayOfMonth) -> {
-
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
-                    dbDate = dbFormat.format(newDate.getTime());
-                    dateEditText.setText(dbDate);
+                    mDbDate = dbFormat.format(newDate.getTime());
+                    dateEditText.setText(mDbDate);
                 };
 
         datePickerDialog = new DatePickerDialog(
@@ -112,11 +115,13 @@ public class AddOrderFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        order = new DailyOrder();
+        setField(view, R.id.date_editText, SingletonDateClass.getInstance().dbDate);
 
-        setDate(view);
+        getDate(view);
 
-        addOrder(view, order);
+        mOrder = new DailyOrder();
+
+        addOrder(view, mOrder);
 
         return view;
     }
@@ -127,16 +132,16 @@ public class AddOrderFragment extends Fragment {
         super.onDetach();
     }
 
-    private void sendData() {
-        mCallback.modifyOrder(order, dbDate);
+    private void sendOrder() {
+        mCallback.modifyOrder(mOrder, mDbDate);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_order_menu:
-                Toast.makeText(getContext(), "hello", Toast.LENGTH_SHORT).show();
-                sendData();
+                Toast.makeText(getContext(), "Added to: "+ mDbDate, Toast.LENGTH_SHORT).show();
+                sendOrder();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
