@@ -38,7 +38,7 @@ function onFormSubmit(e) {
   Logger.log(dataToExport);
   
   var dateStr = getMethod(items[2]);
-  var date = Utilities.formatDate(new Date(dateStr), "GMT+1", "dd-MM-yyyy");
+  var date = Utilities.formatDate(new Date(dateStr), "GMT+1", "yyyyMMdd");
                                   
   var base = FirebaseApp.getDatabaseByUrl('https://sendingresponse-64495.firebaseio.com/');
   base.setData("orders/"+date+"/"+phone, dataToExport);
