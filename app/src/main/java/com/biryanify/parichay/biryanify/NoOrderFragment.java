@@ -13,8 +13,7 @@ public class NoOrderFragment extends Fragment{
     }
 
     public static NoOrderFragment newInstance() {
-        NoOrderFragment noOrderFragment = new NoOrderFragment();
-        return noOrderFragment;
+        return new NoOrderFragment();
     }
 
     @Override

@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 
 import java.text.SimpleDateFormat;
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
     SharedPreferences sharedPreferences;
     public static final String datePref = "datePref";
     public static final String dbDateKey = "dbDateKey";
+    public static final String activeDateKey = "activeDateKey";
 
     TextView dateTextView, totalOrdersTextView;
 
@@ -120,25 +120,6 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    private void logInstanceID() {
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(task -> {
-
-                            if (!task.isSuccessful()) {
-                                Log.w(TAG, "getInstanceId failed", task.getException());
-                                return;
-                            }
-
-                            // Get new Instance ID token
-                            String token = task.getResult().getToken();
-
-                            // Log and toast
-                            String msg = getString(R.string.msg_token_fmt, token);
-                            Log.d(TAG, msg);
-                        }
-                );
-    }
-
     private void setDate() {
 
         SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
@@ -196,7 +177,9 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
 
         if(SENDER_ID != null){
             if(SENDER_ID.equals("Notification Service")) {
-                instance.dbDate = sharedPreferences.getString(dbDateKey, "01-07-2018");
+                instance.dbDate = sharedPreferences.getString(dbDateKey, "20180701");
+            } else {
+                instance.dbDate = sharedPreferences.getString(activeDateKey, "20180701");
             }
         }
 
@@ -205,8 +188,6 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
         totalOrdersTextView.setText("Loading..");
 
-        logInstanceID();
-
         swipeRefreshLayout.post(() -> {
             swipeRefreshLayout.setRefreshing(true);
             reflectChanges();
@@ -214,23 +195,12 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.add_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.add_order_menu:
-                addOrder();
-                return true;
-            case android.R.id.home:
-                onBackPressed();
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    protected void onDestroy() {
+        ordersRef.removeEventListener(ordersRefListener);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(activeDateKey, instance.dbDate);
+        editor.apply();
+        super.onDestroy();
     }
 
     private void addOrder() {
@@ -273,6 +243,27 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         finish();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_order_menu:
+                addOrder();
+                return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void modifyOrder(DailyOrder dailyOrder, String date) {
         deleteOrder(dailyOrder, false);
 
@@ -299,9 +290,5 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        ordersRef.removeEventListener(ordersRefListener);
-        super.onDestroy();
-    }
+
 }

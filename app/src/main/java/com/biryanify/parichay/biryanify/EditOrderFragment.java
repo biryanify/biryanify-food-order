@@ -129,7 +129,6 @@ public class EditOrderFragment extends Fragment{
                 todayDate.get(Calendar.MONTH),
                 todayDate.get(Calendar.DAY_OF_MONTH)
         );
-        Log.d("FragmentActivity", "Got this date "+ mDbDate);
     }
 
     @Nullable
