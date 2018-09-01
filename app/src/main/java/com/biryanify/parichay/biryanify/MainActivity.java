@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
     private static final String TAG = "MainActivity";
 
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
     public static final String datePref = "datePref";
     public static final String dbDateKey = "dbDateKey";
     public static final String activeDateKey = "activeDateKey";
@@ -135,7 +136,8 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
                 (DatePicker view, int year, int monthOfYear, int dayOfMonth) -> {
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
-                    instance.dbDate = dbFormat.format(newDate.getTime());
+                    editor.putString(activeDateKey, dbFormat.format(newDate.getTime()));
+                    editor.apply();
                     Intent recursiveIntent = new Intent(view.getContext(), MainActivity.class);
                     recursiveIntent.putExtra("SENDER_KEY", "MainActivity");
                     startActivity(recursiveIntent);
@@ -172,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
         fragmentManager = getSupportFragmentManager();
 
         sharedPreferences = getSharedPreferences(datePref, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         instance = SingletonDateClass.getInstance();
 
@@ -197,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements onDeleteOrder {
     @Override
     protected void onDestroy() {
         ordersRef.removeEventListener(ordersRefListener);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(activeDateKey, instance.dbDate);
         editor.apply();
         super.onDestroy();

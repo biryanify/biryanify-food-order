@@ -2,13 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
     android:orientation="vertical"
     android:visibility="visible"
-    tools:context=".IndexActivity"
-    android:id="@+id/constraint_layout">
+    tools:context=".IndexActivity">
 
     <TextView
         android:id="@+id/getDate"
@@ -17,13 +17,13 @@
         android:layout_height="49dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/rounded_border_edittext"
         android:hint="Choose a date"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/date_textview" />
 
     <Button
         android:id="@+id/button_check"
@@ -32,12 +32,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="129dp"
         android:layout_marginStart="130dp"
-        android:layout_marginTop="32dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#3bbdfa"
         android:text="Check Orders"
         android:textAlignment="center"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/getDate" />
@@ -46,24 +45,54 @@
         android:id="@+id/date_textview"
         android:layout_width="match_parent"
         android:layout_height="33dp"
-        android:layout_marginTop="32dp"
         android:background="@color/date_textview_color"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/button_check" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/today_textview"
+        android:layout_width="63.8dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:text="Today: "
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/date_textview"
+        app:layout_constraintTop_toTopOf="@+id/date_textview" />
+
+    <TextClock
+        android:id="@+id/clock_textview"
+        android:layout_width="90dp"
+        android:layout_height="33dp"
+        android:format24Hour="hh:mm a"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/date_textview"
+        app:layout_constraintTop_toTopOf="@+id/date_textview" />
+
 
     <TextView
         android:id="@+id/totalorder_textview"
         android:layout_width="match_parent"
         android:layout_height="32dp"
+        android:layout_marginTop="16dp"
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:textAlignment="center"
-        android:textStyle="bold"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/date_textview" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_check" />
 
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -78,6 +107,8 @@
         app:layout_constraintTop_toBottomOf="@+id/totalorder_textview">
 
     </FrameLayout>
+
+
 
 
 </android.support.constraint.ConstraintLayout>

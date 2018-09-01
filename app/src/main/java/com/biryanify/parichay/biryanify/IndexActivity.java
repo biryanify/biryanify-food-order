@@ -25,14 +25,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class IndexActivity extends AppCompatActivity {
 
     private static final String TAG = "Index Activity";
-    private TextView editText;
+    private TextView dateEditText;
     private DatePickerDialog datePickerDialog;
+    SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
 
     public static FragmentManager fragmentManager;
 
@@ -40,9 +42,10 @@ public class IndexActivity extends AppCompatActivity {
     public static final String datePref = "datePref";
     public static final String activeDateKey = "activeDateKey";
 
-    TextView dateTextView, totalOrdersTextView;
+    TextView dateTextView, orderTextView, timeTextView;
+    Calendar todayDate;
 
-//    private ArrayList<DailyOrder> ordersList;
+    private ArrayList<DailyOrder> ordersList;
 
     private SingletonDateClass instance;
 
@@ -76,58 +79,57 @@ public class IndexActivity extends AppCompatActivity {
                         });
     }
 
-//    private void update(DataSnapshot dataSnapshot) {
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//        ordersList.clear();
-//        long totalOrders = 0;
-//
-//        if(dataSnapshot.getValue() != null && dataSnapshot.getKey().equals(instance.dbDate)) {
-//
-//            for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
-//                DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
-//                totalOrders += Long.parseLong(dailyOrder.getQuantity());
-//                ordersList.add(dailyOrder);
-//            }
-//
-//            totalOrdersTextView.setText("Total Orders: " + totalOrders);
-//
-//            fragmentTransaction.replace
-//                    (
-//                            R.id.fragment_container_index,
-//                            RecyclerViewFragment.newInstance(ordersList),
-//                            "RecyclerFragment"
-//                    );
-//            fragmentTransaction.commitAllowingStateLoss();
-//
-//        } else if(dataSnapshot.getValue() == null){
-//            totalOrdersTextView.setText("Total Orders: 0");
-//            fragmentTransaction.replace
-//                    (
-//                            R.id.fragment_container_index,
-//                            NoOrderFragment.newInstance(),
-//                            "NoOrderFragment"
-//                    );
-//            fragmentTransaction.commitAllowingStateLoss();
-//        }
-//
-//    }
+    private void update(DataSnapshot dataSnapshot) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-    private void setDate() {
+        ordersList.clear();
+        long totalOrders = 0;
 
-        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        if(dataSnapshot.getValue() != null && dataSnapshot.getKey().equals(instance.dbDate)) {
+
+            for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
+                DailyOrder dailyOrder = orderSnapshot.getValue(DailyOrder.class);
+                totalOrders += Long.parseLong(dailyOrder.getQuantity());
+                ordersList.add(dailyOrder);
+            }
+
+            orderTextView.setText("Total Orders: " + totalOrders);
+
+            fragmentTransaction.replace
+                    (
+                            R.id.fragment_container_index,
+                            RecyclerViewFragment.newInstance(ordersList),
+                            "RecyclerFragment"
+                    );
+            fragmentTransaction.commitAllowingStateLoss();
+
+        } else if(dataSnapshot.getValue() == null){
+            orderTextView.setText("Total Orders: 0");
+            fragmentTransaction.replace
+                    (
+                            R.id.fragment_container_index,
+                            NoOrderFragment.newInstance(),
+                            "NoOrderFragment"
+                    );
+            fragmentTransaction.commitAllowingStateLoss();
+        }
+    }
+
+    private void getDate() {
         SimpleDateFormat basicFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
-        editText.setOnClickListener(v -> datePickerDialog.show());
-
-        Calendar todayDate = Calendar.getInstance();
+        dateEditText.setOnClickListener(v -> datePickerDialog.show());
 
         DatePickerDialog.OnDateSetListener listener =
                 (DatePicker view, int year, int monthOfYear, int dayOfMonth) -> {
                     Calendar newDate = Calendar.getInstance();
                     newDate.set(year, monthOfYear, dayOfMonth);
-                    instance.dbDate = dbFormat.format(newDate.getTime());
-                    editText.setText(basicFormat.format(newDate.getTime()));
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(activeDateKey, dbFormat.format(newDate.getTime()));
+                    editor.apply();
+
+                    dateEditText.setText(basicFormat.format(newDate.getTime()));
                 };
 
         datePickerDialog = new DatePickerDialog(
@@ -163,29 +165,25 @@ public class IndexActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
 
-        instance = SingletonDateClass.getInstance();
-        editText = findViewById(R.id.getDate);
+        logInstanceID();
 
         sharedPreferences = getSharedPreferences(datePref, Context.MODE_PRIVATE);
 
-        logInstanceID();
+        instance = SingletonDateClass.getInstance();
+        dateEditText = findViewById(R.id.getDate);
+
+        todayDate = Calendar.getInstance();
+
+        getDate();
 
         getUpcomingOrder();
 
-        setDate();
-
-//        ordersList = new ArrayList<>();
-
-        dateTextView = (TextView) findViewById(R.id.date_textview);
-        instance.dbDate = sharedPreferences.getString(activeDateKey, "20180701");
-        dateTextView.setText(instance.getHrDate());
-
-        totalOrdersTextView = (TextView) findViewById(R.id.totalorder_textview);
-        totalOrdersTextView.setText("No Upcoming Orders");
+        orderTextView = (TextView) findViewById(R.id.totalorder_textview);
+        orderTextView.setText("Upcoming Orders");
 
         Button mButton = findViewById(R.id.button_check);
         mButton.setOnClickListener(v -> {
-                if(editText.getText().toString().length() != 0) {
+                if(dateEditText.getText().toString().length() != 0) {
                     Intent intent = new Intent(v.getContext(), MainActivity.class);
                     intent.putExtra("SENDER_KEY", "Index Activity");
                     startActivity(intent);
@@ -196,19 +194,29 @@ public class IndexActivity extends AppCompatActivity {
         });
     }
 
+    private void setDate() {
+        instance.dbDate = dbFormat.format(todayDate.getTime());
+
+        dateTextView = (TextView) findViewById(R.id.date_textview);
+        dateTextView.setText(instance.getHrDate());
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(activeDateKey, instance.dbDate);
-        editor.apply();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        editText.setText("");
-        instance.dbDate = sharedPreferences.getString(activeDateKey, "20180701");
-        dateTextView.setText(instance.getHrDate());
+        setDate();
+        dateEditText.setText("");
     }
+
+    @Override
+    protected void onDestroy() {
+        ordersRef.removeEventListener(ordersRefListener);
+        super.onDestroy();
+    }
+
 }
