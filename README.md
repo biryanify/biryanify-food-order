@@ -29,8 +29,14 @@ You can have a look at the Google Form [here](bit.ly/biryanify).
 
 
 ### Function of Script(Sequentially):
+
+
 Store all the response in a variable
+
+
 Then the variables are converted into a JSON
+
+
 The JSON is then sent to my firebase database using AppScript library for Firebase
 
 
@@ -50,6 +56,12 @@ The functions of the android app in a nutshell:
 
 
 Everytime firebase receives a form response, the app receives a notification of new order placed. 
+
+
 On tapping the notification, it opens up app to gives details of the orders such as name, address, email etc
+
+
 On opening the app you can select the date for which you want to see the orders.
+
+
 Orders for a date is seen as a list of items, and which individually if tapped on expands into the details of that particular order.
