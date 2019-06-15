@@ -25,7 +25,7 @@ This is a hack to get an ecommerce website for free. I had to come up with an ec
 When you are creating/editing your Google form, under the 'meat balls menu (thats how I like to call it) you'll find 'Script Editor'. This is where the script goes. 
 
 
-You can have a look at the Google Form [here](bit.ly/biryanify).
+You can have a look at the Google Form [here](https://bit.ly/biryanify).
 
 
 ### Function of Script(Sequentially):
